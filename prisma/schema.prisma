@@ -1,0 +1,259 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// User model - for authentication
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("admin")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+// ActivityCategory model - with soft delete
+model ActivityCategory {
+  id        String     @id @default(uuid())
+  name      String     @unique
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  deletedAt DateTime?
+  deletedBy String?
+  
+  // Relations
+  activities Activity[]
+
+  @@index([name])
+  @@map("activity_categories")
+}
+
+// Activity model
+model Activity {
+  id          String   @id @default(uuid())
+  title       String
+  description String   @db.Text
+  categoryId  String
+  date        DateTime
+  author      String
+  thumbnail   String?  @db.Text
+  images      Json?    // Array of Cloudinary URLs
+  videos      Json?    // Array of YouTube embeds
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  category ActivityCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@index([categoryId])
+  @@index([date])
+  @@map("activities")
+}
+
+// Document model
+model Document {
+  id        String   @id @default(uuid())
+  title     String
+  type      String   // Thông tư, Quyết định, Quy chế, Kế hoạch, Quy định, Hướng dẫn
+  number    String
+  date      DateTime
+  field     String   // Quản lý giáo dục, Tuyển sinh, Đánh giá, Kế hoạch, Học sinh, Chương trình
+  summary   String?  @db.Text
+  isNew     Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  files DocumentFile[]
+
+  @@index([type])
+  @@index([field])
+  @@index([date])
+  @@map("documents")
+}
+
+// DocumentFile model - for storing multiple files per document
+model DocumentFile {
+  id        String   @id @default(uuid())
+  documentId String
+  fileUrl   String   @db.Text
+  fileType  String   @default("pdf") // pdf, doc, docx, image
+  order     Int      @default(0)     // for sorting multiple files
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@index([documentId])
+  @@map("document_files")
+}
+
+// Tuition model
+model Tuition {
+  id          String    @id @default(uuid())
+  type        String    // grade, discount, schedule, fee
+  description String?   @db.Text
+  // Grade-specific
+  grade       String?
+  level       String?   // elementary, middle
+  tuition     String?
+  // Discount-specific
+  discount    String?
+  // Schedule-specific
+  period      String?
+  date        DateTime?
+  months      String?
+  // Fee-specific
+  name        String
+  typeFee     String?   // included, notIncluded
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([type])
+  @@map("tuitions")
+}
+
+// DocumentCategory model - for document types and fields
+model DocumentCategory {
+  id        String   @id @default(uuid())
+  name      String
+  type      String   // 'document_type' or 'document_field'
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([name, type])
+  @@index([type])
+  @@map("document_categories")
+}
+
+// Reform model - for public disclosure information
+model Reform {
+  id          String   @id @default(uuid())
+  title       String
+  description String   @db.Text
+  details     Json     // Array of detail strings
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relationship with files
+  files ReformFile[]
+
+  @@map("reforms")
+}
+
+// ReformFile model - for storing multiple files per reform
+model ReformFile {
+  id       String @id @default(uuid())
+  fileUrl  String
+  fileType String // 'image', 'pdf', 'doc', 'docx', etc.
+  order    Int    @default(0)
+
+  // Foreign key
+  reformId String
+  reform   Reform @relation(fields: [reformId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([reformId])
+  @@map("reform_files")
+}
+
+// Procedure model - for school regulations and procedures
+model Procedure {
+  id          String   @id @default(uuid())
+  title       String   // "Nội quy học sinh"
+  category    String   // "Học sinh", "Tuyển sinh", "Học tập", etc.
+  description String   @db.Text // Mô tả ngắn
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  content ProcedureContent[]
+  files   ProcedureFile[]
+
+  @@index([category])
+  @@map("procedures")
+}
+
+// ProcedureContent model - for content sections of each procedure
+model ProcedureContent {
+  id          String   @id @default(uuid())
+  procedureId String
+  title       String   // "Quy tắc ứng xử cơ bản"
+  items       Json     // Array of string items
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  procedure Procedure @relation(fields: [procedureId], references: [id], onDelete: Cascade)
+
+  @@index([procedureId])
+  @@map("procedure_contents")
+}
+
+// ProcedureFile model - for storing multiple files per procedure
+model ProcedureFile {
+  id          String   @id @default(uuid())
+  procedureId String
+  fileUrl     String   @db.Text
+  fileType    String   // 'image', 'pdf', 'doc', 'docx', etc.
+  fileName    String?  // Original file name
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  procedure Procedure @relation(fields: [procedureId], references: [id], onDelete: Cascade)
+
+  @@index([procedureId])
+  @@map("procedure_files")
+}
+
+// News model - for news articles
+model News {
+  id          String   @id @default(uuid())
+  title       String
+  description String   @db.Text // Short description/excerpt
+  content     String   @db.Text // Rich text content from Quill editor
+  category    String   // 'Tiểu học' or 'Trung học'
+  date        DateTime // Publication date
+  thumbnail   String?  @db.Text // Auto-generated from first image
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  images NewsImage[]
+
+  @@index([category])
+  @@index([date])
+  @@map("news")
+}
+
+// NewsImage model - for storing multiple images per news article
+model NewsImage {
+  id       String   @id @default(uuid())
+  newsId   String
+  imageUrl String   @db.Text
+  order    Int      @default(0) // Order of images
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  news News @relation(fields: [newsId], references: [id], onDelete: Cascade)
+
+  @@index([newsId])
+  @@index([order])
+  @@map("news_images")
+}
