@@ -23,6 +23,7 @@ import {
     Chip,
 } from '@mui/material';
 import { Edit as EditIcon, Delete as DeleteIcon, Add as AddIcon, Search as SearchIcon } from '@mui/icons-material';
+import { api } from '@/lib/api';
 
 interface TuitionDiscount {
     id: string;
@@ -46,9 +47,7 @@ export default function TuitionDiscountPage() {
                 search: searchQuery,
                 page: (page + 1).toString(),
             });
-            const res = await fetch(`/api/admin/tuition?${params}`);
-            if (!res.ok) throw new Error('Error loading');
-            const { data, total } = await res.json();
+            const { data, total } = await api.get<{ data: TuitionDiscount[]; total: number }>(`/admin/tuition?${params}`);
             setTuitions(data);
             setTotal(total);
         } catch (err) {
@@ -71,8 +70,8 @@ export default function TuitionDiscountPage() {
 
     const handleDelete = async (id: string) => {
         try {
-            const res = await fetch(`/api/admin/tuition/${id}`, { method: 'DELETE' });
-            if (res.ok) loadTuitions();
+            await api.delete(`/admin/tuition/${id}`);
+            loadTuitions();
         } catch (err) {
             setError((err as Error).message || 'Lỗi xóa');
         }

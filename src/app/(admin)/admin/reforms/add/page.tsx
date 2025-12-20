@@ -29,6 +29,7 @@ import {
     NavigateNext as NavigateNextIcon,
 } from '@mui/icons-material';
 import { toast } from 'react-toastify';
+import { api } from '@/lib/api';
 
 export default function AddReformPage() {
     const router = useRouter();
@@ -218,17 +219,7 @@ export default function AddReformPage() {
                 submitData.append(`fileType_${i}`, formData.fileTypes[i]);
             }
 
-            const res = await fetch('/api/admin/reforms', {
-                method: 'POST',
-                body: submitData,
-            });
-
-            if (!res.ok) {
-                const err = await res.json();
-                setError(err.error || 'Lỗi tạo mục công khai');
-                setSubmitLoading(false);
-                return;
-            }
+            await api.post('/admin/reforms', submitData);
 
             toast.success(`Đã tạo mục công khai với ${formData.files.length} file thành công`);
             router.push('/admin/reforms');

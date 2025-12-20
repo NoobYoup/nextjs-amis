@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { api, API_URL, getMediaUrl } from '@/lib/api';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -78,10 +79,7 @@ export default function Reform() {
     useEffect(() => {
         const loadReforms = async () => {
             try {
-                const response = await fetch('/api/client/reforms');
-                if (!response.ok) throw new Error('Error loading reforms');
-
-                const { data } = await response.json();
+                const { data } = await api.get<{ data: Reform[] }>('/client/reforms');
                 setReforms(data || []);
             } catch (err) {
                 console.error('Error loading reforms:', err);
@@ -108,7 +106,7 @@ export default function Reform() {
         setDownloading(reform.id);
         try {
             const firstFile = reform.files.find((f) => f.fileType !== 'image') || reform.files[0];
-            const response = await fetch(`/api/client/download?url=${encodeURIComponent(firstFile.fileUrl)}`);
+            const response = await fetch(`${API_URL}/client/download?url=${encodeURIComponent(firstFile.fileUrl)}`);
 
             if (!response.ok) {
                 throw new Error('Download failed');
@@ -430,7 +428,7 @@ export default function Reform() {
 
                                     <Box
                                         component="img"
-                                        src={selectedImageUrls[selectedImageIndex]}
+                                        src={getMediaUrl(selectedImageUrls[selectedImageIndex])}
                                         alt={`Image ${selectedImageIndex + 1}`}
                                         sx={{
                                             maxWidth: '100%',

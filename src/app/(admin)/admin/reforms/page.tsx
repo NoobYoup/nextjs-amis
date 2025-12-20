@@ -35,6 +35,7 @@ import {
 } from '@mui/icons-material';
 import dayjs from 'dayjs';
 import { toast } from 'react-toastify';
+import { api, API_URL, getMediaUrl } from '@/lib/api';
 
 interface ReformFile {
     id: string;
@@ -69,15 +70,10 @@ export default function ReformsPage() {
 
     const loadReforms = useCallback(async () => {
         try {
-            const params = new URLSearchParams({
-                page: (page + 1).toString(),
-            });
-            const res = await fetch(`/api/admin/reforms?${params}`);
-            if (!res.ok) throw new Error('Error loading reforms');
-            const { data, total } = await res.json();
+            const data = await api.get<{ data: Reform[]; total: number }>(`/admin/reforms?page=${page + 1}`);
 
-            setReforms(data);
-            setTotal(total);
+            setReforms(data.data);
+            setTotal(data.total);
         } catch (err) {
             setError((err as Error).message || 'Lỗi tải dữ liệu');
         }
@@ -95,8 +91,7 @@ export default function ReformsPage() {
 
     const handleConfirmDelete = async () => {
         try {
-            const res = await fetch(`/api/admin/reforms/${selectedId}`, { method: 'DELETE' });
-            if (!res.ok) throw new Error('Error deleting');
+            await api.delete(`/admin/reforms/${selectedId}`);
             loadReforms();
             handleCloseDeleteDialog();
         } catch (err) {
@@ -118,21 +113,14 @@ export default function ReformsPage() {
         setDownloading(reform.id);
         try {
             const firstFile = reform.files.find((f) => f.fileType !== 'image') || reform.files[0];
-            const response = await fetch(`/api/download?url=${encodeURIComponent(firstFile.fileUrl)}`);
+            const downloadUrl = `${API_URL}/download?url=${encodeURIComponent(firstFile.fileUrl)}`;
 
-            if (!response.ok) {
-                throw new Error('Download failed');
-            }
-
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
-            link.href = url;
+            link.href = downloadUrl;
             link.download = `${reform.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.${fileType}`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            window.URL.revokeObjectURL(url);
         } catch (error) {
             console.error('Download error:', error);
             toast.error('Lỗi khi tải file. Vui lòng thử lại.');
@@ -223,7 +211,7 @@ export default function ReformsPage() {
                                     <TableCell>{reform.details.length} mục</TableCell>
                                     <TableCell>{dayjs(reform.createdAt).format('DD/MM/YYYY')}</TableCell>
                                     <TableCell>{dayjs(reform.updatedAt).format('DD/MM/YYYY')}</TableCell>
-                                    <TableCell sx={{ textAlign: 'center' }}>
+                                    <TableCell sx={{ textAlign: 'center', display: 'flex' }}>
                                         <IconButton
                                             size="small"
                                             href={`/admin/reforms/update/${reform.id}`}
@@ -336,7 +324,7 @@ export default function ReformsPage() {
                     {selectedImageUrls.length > 0 && (
                         <Box sx={{ position: 'relative' }}>
                             <Image
-                                src={selectedImageUrls[selectedImageIndex]}
+                                src={getMediaUrl(selectedImageUrls[selectedImageIndex])}
                                 alt={`Image ${selectedImageIndex + 1}`}
                                 width={800}
                                 height={600}

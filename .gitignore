@@ -10,6 +10,9 @@
 !.yarn/releases
 !.yarn/versions
 
+# db
+.amisedu_db.sql
+
 # testing
 /coverage
 

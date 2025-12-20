@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { api, API_URL } from '@/lib/api';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -74,13 +75,8 @@ export default function ProceduresPage() {
                     params.append('category', selectedCategory);
                 }
 
-                const res = await fetch(`/api/client/procedures?${params}`);
-                if (!res.ok) {
-                    throw new Error('Failed to fetch procedures');
-                }
-
-                const data = await res.json();
-                setProcedures(data);
+                const data = await api.get<{ data: Procedure[] }>(`/client/procedures?${params}`);
+                setProcedures(data.data);
                 setError('');
             } catch (err) {
                 setError((err as Error).message || 'Có lỗi xảy ra khi tải dữ liệu');
@@ -140,7 +136,7 @@ export default function ProceduresPage() {
     const handleDownload = (file: ProcedureFile) => {
         try {
             const link = document.createElement('a');
-            link.href = file.fileUrl;
+            link.href = `${API_URL}/client/download?url=${encodeURIComponent(file.fileUrl)}`;
             link.download = file.fileName || 'file';
             link.target = '_blank';
             document.body.appendChild(link);

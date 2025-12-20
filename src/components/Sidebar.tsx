@@ -34,7 +34,7 @@ import {
     Notifications,
 } from '@mui/icons-material';
 import { SidebarMenuItem } from '@/types/sidebar';
-import { signOut } from 'next-auth/react';
+import { useAuth } from '@/contexts/AuthContext';
 
 const SIDEBAR_WIDTH = 280;
 const SIDEBAR_COLLAPSED_WIDTH = 80;
@@ -62,6 +62,15 @@ const menuItems: SidebarMenuItem[] = [
         subItems: [{ id: 'procedures-list', label: 'Danh sách thủ tục', href: '/admin/procedures' }],
     },
     {
+        id: 'documents',
+        label: 'Văn bản',
+        icon: AttachFileIcon,
+        subItems: [
+            { id: 'documents-list', label: 'Danh sách văn bản', href: '/admin/documents' },
+            { id: 'documents-categories', label: 'Danh mục văn bản', href: '/admin/categories/document' },
+        ],
+    },
+    {
         id: 'news',
         label: 'Tin tức',
         icon: Notifications,
@@ -78,15 +87,7 @@ const menuItems: SidebarMenuItem[] = [
             { id: 'tuition-fee', label: 'Khoản Phí', href: '/admin/tuition/fee' },
         ],
     },
-    {
-        id: 'documents',
-        label: 'Văn bản',
-        icon: AttachFileIcon,
-        subItems: [
-            { id: 'documents-list', label: 'Danh sách văn bản', href: '/admin/documents' },
-            { id: 'documents-categories', label: 'Danh mục văn bản', href: '/admin/categories/document' },
-        ],
-    },
+
     {
         id: 'settings',
         label: 'Cài đặt',
@@ -150,11 +151,10 @@ const Sidebar: React.FC = () => {
         setExpandedItems(activeMainItems);
     }, [isMenuItemOrSubItemActive]);
 
-    // Define handleLogout nếu onLogout không được pass từ parent
+    // Define handleLogout
+    const { logout } = useAuth();
     const handleLogout = async () => {
-        await signOut({ redirect: false });
-        router.push('/login');
-        router.refresh();
+        logout();
     };
 
     const sidebarContent = (

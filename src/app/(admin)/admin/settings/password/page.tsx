@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { toast } from 'react-toastify';
-import axios from 'axios';
+import { api } from '@/lib/api';
 
 export default function ChangePasswordPage() {
     const [formData, setFormData] = useState({
@@ -113,7 +113,7 @@ export default function ChangePasswordPage() {
 
         setLoading(true);
         try {
-            await axios.put('/api/admin/change-password', {
+            await api.put('/admin/change-password', {
                 currentPassword: formData.currentPassword,
                 newPassword: formData.newPassword,
             });
@@ -128,9 +128,7 @@ export default function ChangePasswordPage() {
             });
             setErrors({});
         } catch (error: unknown) {
-            const errorMessage =
-                (error as { response?: { data?: { error?: string } } }).response?.data?.error ||
-                'Có lỗi xảy ra khi thay đổi mật khẩu';
+            const errorMessage = (error as Error).message || 'Có lỗi xảy ra khi thay đổi mật khẩu';
             toast.error(errorMessage);
         } finally {
             setLoading(false);

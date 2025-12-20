@@ -19,6 +19,7 @@ import {
     Paper,
 } from '@mui/material';
 import { ArrowBack as ArrowBackIcon, Save as SaveIcon } from '@mui/icons-material';
+import { api } from '@/lib/api';
 
 export default function AddTuitionGradePage() {
     const router = useRouter();
@@ -43,16 +44,7 @@ export default function AddTuitionGradePage() {
 
         const saveData = { ...formData, type: 'grade' };
         try {
-            const res = await fetch('/api/admin/tuition', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(saveData),
-            });
-            if (!res.ok) {
-                const err = await res.json();
-                setError(err.error || err.details || 'Lỗi lưu');
-                return;
-            }
+            await api.post('/admin/tuition', saveData);
             router.push('/admin/tuition/grade');
         } catch (err) {
             setError((err as Error).message || 'Có lỗi xảy ra');

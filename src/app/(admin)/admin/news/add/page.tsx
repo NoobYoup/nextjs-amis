@@ -28,6 +28,7 @@ import {
 } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
+import { api } from '@/lib/api';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 
@@ -233,14 +234,7 @@ export default function AddNewsPage() {
                 submitData.append('images', image);
             });
 
-            const response = await fetch('/api/admin/news', {
-                method: 'POST',
-                body: submitData,
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to create news');
-            }
+            await api.post('/admin/news', submitData);
 
             toast.success('Tạo tin tức thành công');
             router.push('/admin/news');

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Box, Container, Typography, TextField, Button, Stack, Breadcrumbs, Link, Alert, Paper } from '@mui/material';
 import { ArrowBack as ArrowBackIcon, Save as SaveIcon } from '@mui/icons-material';
+import { api } from '@/lib/api';
 
 export default function AddTuitionSchedulePage() {
     const router = useRouter();
@@ -28,16 +29,7 @@ export default function AddTuitionSchedulePage() {
 
         const saveData = { ...formData, type: 'schedule' };
         try {
-            const res = await fetch('/api/admin/tuition', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(saveData),
-            });
-            if (!res.ok) {
-                const err = await res.json();
-                setError(err.error || 'Lỗi lưu');
-                return;
-            }
+            await api.post('/admin/tuition', saveData);
             router.push('/admin/tuition/schedule');
         } catch (err) {
             setError((err as Error).message || 'Có lỗi xảy ra');

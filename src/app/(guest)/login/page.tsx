@@ -12,9 +12,10 @@ import {
     InputAdornment,
     IconButton,
 } from '@mui/material';
+import { api } from '@/lib/api';
 import { Visibility, VisibilityOff, School } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
-import { signIn } from 'next-auth/react';
+import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'react-toastify';
 
 export default function Login() {
@@ -23,6 +24,8 @@ export default function Login() {
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
+
+    const { login } = useAuth();
 
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
@@ -46,24 +49,14 @@ export default function Login() {
                 return;
             }
 
-            // Gọi NextAuth signIn
-            const result = await signIn('credentials', {
-                email,
-                password,
-                redirect: false, // Không auto redirect, handle manual
-            });
-
-            if (!result?.ok) {
-                toast.error('Đăng nhập thất bại. Vui lòng kiểm tra lại email hoặc mật khẩu.');
-                return;
-            }
-
-            // Demo success
+            // Call API
+            const data = await api.post<{ token: string; user: any }>('/auth/login', { email, password });
+            
+            // Login context
+            login(data.token, data.user);
             toast.success('Đăng nhập thành công!');
-            router.push('/admin/activities');
-            router.refresh();
         } catch (err) {
-            toast.error('Có lỗi xảy ra. Vui lòng thử lại.');
+            toast.error((err as Error).message || 'Đăng nhập thất bại.');
             console.error(err);
         } finally {
             setLoading(false);

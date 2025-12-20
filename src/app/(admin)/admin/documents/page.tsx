@@ -42,6 +42,7 @@ import {
 } from '@mui/icons-material';
 import dayjs from 'dayjs';
 import { SelectChangeEvent } from '@mui/material/Select';
+import { api, API_URL, getMediaUrl } from '@/lib/api';
 
 interface DocumentFile {
     id: string;
@@ -95,10 +96,7 @@ export default function DocumentsPage() {
     const loadCategories = useCallback(async () => {
         try {
             setCategoriesLoading(true);
-            const response = await fetch('/api/admin/categories/document');
-            if (!response.ok) throw new Error('Error loading categories');
-
-            const { data } = await response.json();
+            const { data } = await api.get<{ data: DocumentCategory[] }>('/admin/categories/document');
             const categories: DocumentCategory[] = data || [];
 
             // Separate types and fields
@@ -132,9 +130,7 @@ export default function DocumentsPage() {
                 field: selectedField,
                 page: (page + 1).toString(),
             });
-            const res = await fetch(`/api/admin/documents?${params}`);
-            if (!res.ok) throw new Error('Error loading documents');
-            const { data, total } = await res.json();
+            const { data, total } = await api.get<{ data: Document[]; total: number }>(`/admin/documents?${params}`);
 
             setDocuments(data);
             setTotal(total);
@@ -174,8 +170,7 @@ export default function DocumentsPage() {
 
     const handleConfirmDelete = async () => {
         try {
-            const res = await fetch(`/api/admin/documents/${selectedId}`, { method: 'DELETE' });
-            if (!res.ok) throw new Error('Error deleting');
+            await api.delete(`/admin/documents/${selectedId}`);
             loadDocuments();
             handleCloseDeleteDialog();
         } catch (err) {
@@ -322,7 +317,7 @@ export default function DocumentsPage() {
                                                             handleOpenImageGallery(
                                                                 doc.files
                                                                     .filter((f) => f.fileType === 'image')
-                                                                    .map((f) => f.fileUrl),
+                                                                    .map((f) => getMediaUrl(f.fileUrl)),
                                                             )
                                                         }
                                                         title="Xem ảnh"
@@ -331,12 +326,12 @@ export default function DocumentsPage() {
                                                         <ImageIcon />
                                                     </IconButton>
                                                 ) : (
-                                                    <IconButton
-                                                        size="small"
-                                                        href={doc.files[0].fileUrl}
-                                                        target="_blank"
-                                                        title="Tải xuống"
-                                                    >
+                                                     <IconButton
+                                                         size="small"
+                                                         href={`${API_URL}/client/download?url=${encodeURIComponent(doc.files[0].fileUrl)}`}
+                                                         target="_blank"
+                                                         title="Tải xuống"
+                                                     >
                                                         <DownloadIcon />
                                                     </IconButton>
                                                 )}

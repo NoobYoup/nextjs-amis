@@ -29,7 +29,7 @@ import {
 } from '@mui/material';
 import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import { toast } from 'react-toastify';
-import axios from 'axios';
+import { api } from '@/lib/api';
 
 interface DocumentCategory {
     id: string;
@@ -67,8 +67,8 @@ export default function DocumentCategoriesPage() {
     const fetchCategories = async () => {
         try {
             setLoading(true);
-            const response = await axios.get('/api/admin/categories/document');
-            setCategories(response.data.data || []);
+            const response = await api.get<{ data: DocumentCategory[] }>('/admin/categories/document');
+            setCategories(response.data || []);
         } catch (error) {
             console.error('Error fetching categories:', error);
             toast.error('Có lỗi xảy ra khi tải danh sách danh mục');
@@ -119,19 +119,17 @@ export default function DocumentCategoriesPage() {
             };
 
             if (editingCategory) {
-                await axios.put(`/api/admin/categories/document/${editingCategory.id}`, dataToSubmit);
+                await api.put(`/admin/categories/document/${editingCategory.id}`, dataToSubmit);
                 toast.success('Cập nhật danh mục thành công!');
             } else {
-                await axios.post('/api/admin/categories/document', dataToSubmit);
+                await api.post('/admin/categories/document', dataToSubmit);
                 toast.success('Thêm danh mục thành công!');
             }
 
             handleCloseDialog();
             fetchCategories();
-        } catch (error: unknown) {
-            const errorMessage =
-                (error as { response?: { data?: { error?: string } } }).response?.data?.error || 'Có lỗi xảy ra';
-            toast.error(errorMessage);
+        } catch (error: any) {
+            toast.error(error.message || 'Có lỗi xảy ra');
         } finally {
             setSubmitting(false);
         }
@@ -150,16 +148,13 @@ export default function DocumentCategoriesPage() {
         if (!categoryToDelete) return;
 
         try {
-            await axios.delete(`/api/admin/categories/document/${categoryToDelete.id}`);
+            await api.delete(`/admin/categories/document/${categoryToDelete.id}`);
             toast.success('Xóa danh mục thành công!');
             setDeleteDialogOpen(false);
             setCategoryToDelete(null);
             fetchCategories();
-        } catch (error: unknown) {
-            const errorMessage =
-                (error as { response?: { data?: { error?: string } } }).response?.data?.error ||
-                'Có lỗi xảy ra khi xóa danh mục';
-            toast.error(errorMessage);
+        } catch (error: any) {
+            toast.error(error.message || 'Có lỗi xảy ra khi xóa danh mục');
         }
     };
 

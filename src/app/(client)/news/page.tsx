@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { api, getMediaUrl } from '@/lib/api';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -50,14 +51,10 @@ export default function NewsPage() {
                 params.append('category', selectedCategory);
             }
 
-            const response = await fetch(`/api/client/news?${params}`);
-            if (!response.ok) {
-                throw new Error('Failed to fetch news');
-            }
-
-            const data = await response.json();
+            const data = await api.get<{ data: NewsArticle[]; pages: number; current: number }>(`/client/news?${params}`);
+            
             setNews(data.data);
-            setTotalPages(data.pagination.pages);
+            setTotalPages(data.pages || 1);
             setError('');
         } catch (err) {
             console.error('Error fetching news:', err);
@@ -190,7 +187,7 @@ export default function NewsPage() {
                                         <CardMedia
                                             component="img"
                                             height={200}
-                                            image={article.thumbnail || '/images/hero_backround.jpg'}
+                                            image={getMediaUrl(article.thumbnail)}
                                             alt={article.title}
                                             sx={{ objectFit: 'cover' }}
                                         />

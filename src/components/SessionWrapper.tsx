@@ -1,6 +1,6 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
+import { useAuth } from '@/contexts/AuthContext';
 import { ReactNode } from 'react';
 
 interface SessionWrapperProps {
@@ -8,14 +8,18 @@ interface SessionWrapperProps {
 }
 
 export default function SessionWrapper({ children }: SessionWrapperProps) {
-    const { data: session, status } = useSession();
+    const { user, isLoading } = useAuth();
 
-    if (status === 'loading') {
+    if (isLoading) {
         return <p>Loading...</p>;
     }
 
-    if (!session?.user || (session.user as { role: string }).role !== 'admin') {
-        return <p>Phiên đăng nhập hết hạn</p>; //fix lỗi từ next-auth.d.ts
+    if (!user || user.role !== 'admin') {
+        const isClient = typeof window !== 'undefined';
+        if (isClient) {
+             window.location.href = '/login';
+        }
+        return <p>Phiên đăng nhập hết hạn</p>;
     }
 
     return <>{children}</>;

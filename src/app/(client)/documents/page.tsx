@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { api, API_URL, getMediaUrl } from '@/lib/api';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -61,7 +62,7 @@ export default function DocumentsPage() {
         setDownloading(doc.id);
         try {
             const firstFile = doc.files[0];
-            const response = await fetch(`/api/client/download?url=${encodeURIComponent(firstFile.fileUrl)}`);
+            const response = await fetch(`${API_URL}/client/download?url=${encodeURIComponent(firstFile.fileUrl)}`);
 
             if (!response.ok) {
                 throw new Error('Download failed');
@@ -108,13 +109,10 @@ export default function DocumentsPage() {
     useEffect(() => {
         const loadFilters = async () => {
             try {
-                const res = await fetch('/api/client/documents/filters');
-                if (res.ok) {
-                    const data = await res.json();
-                    setYears(data.years);
-                    setTypes(data.types);
-                    setFields(data.fields);
-                }
+                const data = await api.get<{ years: number[]; types: string[]; fields: string[] }>('/client/documents/filters');
+                setYears(data.years);
+                setTypes(data.types);
+                setFields(data.fields);
             } catch (err) {
                 console.error('Error loading filters:', err);
             }
@@ -142,12 +140,9 @@ export default function DocumentsPage() {
                     params.append('field', selectedField);
                 }
 
-                const res = await fetch(`/api/client/documents?${params.toString()}`);
-                if (res.ok) {
-                    const { data } = await res.json();
-                    console.log(data);
-                    setDocuments(data);
-                }
+                const responseData = await api.get<Document[] | { data: Document[] }>(`/client/documents?${params.toString()}`);
+                const docs = Array.isArray(responseData) ? responseData : responseData.data;
+                setDocuments(docs);
             } catch (err) {
                 console.error('Error loading documents:', err);
             } finally {
@@ -305,7 +300,7 @@ export default function DocumentsPage() {
                                                             handleOpenImageGallery(
                                                                 doc.files
                                                                     .filter((f) => f.fileType === 'image')
-                                                                    .map((f) => f.fileUrl),
+                                                                    .map((f) => getMediaUrl(f.fileUrl)),
                                                             )
                                                         }
                                                         sx={{

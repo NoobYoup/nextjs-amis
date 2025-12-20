@@ -25,6 +25,7 @@ import {
     DialogActions,
 } from '@mui/material';
 import { Edit as EditIcon, Delete as DeleteIcon, Add as AddIcon } from '@mui/icons-material';
+import { api } from '@/lib/api';
 
 interface TuitionGrade {
     id: string;
@@ -49,9 +50,7 @@ export default function TuitionGradePage() {
                 type: 'grade',
                 page: (page + 1).toString(),
             });
-            const res = await fetch(`/api/admin/tuition?${params}`);
-            if (!res.ok) throw new Error('Error loading');
-            const { data, total } = await res.json();
+            const { data, total } = await api.get<{ data: TuitionGrade[]; total: number }>(`/admin/tuition?${params}`);
             setTuitions(data);
             setTotal(total);
         } catch (err) {
@@ -75,12 +74,7 @@ export default function TuitionGradePage() {
         if (!deleteDialog.id) return;
         
         try {
-            const res = await fetch(`/api/admin/tuition/${deleteDialog.id}`, { method: 'DELETE' });
-            if (!res.ok) {
-                const err = await res.json();
-                setError(err.error || err.details || 'Lỗi xóa');
-                return;
-            }
+            await api.delete(`/admin/tuition/${deleteDialog.id}`);
             loadTuitions();
             setDeleteDialog({ open: false, id: null });
         } catch (err) {

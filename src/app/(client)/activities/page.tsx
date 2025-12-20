@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { api, getMediaUrl } from '@/lib/api';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -52,11 +53,8 @@ export default function ActivitiesPage() {
     useEffect(() => {
         const loadCategories = async () => {
             try {
-                const res = await fetch('/api/client/categories/activity');
-                if (res.ok) {
-                    const data = await res.json();
-                    setCategories(data);
-                }
+                const data = await api.get<Category[]>('/client/categories/activity');
+                setCategories(data);
             } catch (error) {
                 console.error('Error loading categories:', error);
             }
@@ -77,12 +75,10 @@ export default function ActivitiesPage() {
                 params.append('categoryId', selectedCategory);
             }
 
-            const res = await fetch(`/api/client/activities?${params}`);
-            if (res.ok) {
-                const { data, pages } = await res.json();
-                setActivities(data);
-                setTotalPages(pages);
-            }
+            const { data, pages } = await api.get<{ data: Activity[]; pages: number }>(`/client/activities?${params}`);
+            
+            setActivities(data);
+            setTotalPages(pages);
         } catch (error) {
             console.error('Error loading activities:', error);
         } finally {
@@ -186,7 +182,7 @@ export default function ActivitiesPage() {
                                             component="img"
                                             height={400}
                                             width={400}
-                                            image={activity.thumbnail || '/images/hero_backround.jpg'}
+                                            image={getMediaUrl(activity.thumbnail)}
                                             alt={activity.title}
                                             // sx={{ objectFit: 'cover', width: '100%', height: '100%' }}
                                         />

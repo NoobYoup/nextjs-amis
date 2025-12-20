@@ -36,6 +36,7 @@ import {
     FilePresent as FileIcon,
 } from '@mui/icons-material';
 import { toast } from 'react-toastify';
+import { api } from '@/lib/api';
 
 interface ProcedureFile {
     id: string;
@@ -80,15 +81,10 @@ export default function ProceduresPage() {
     const fetchProcedures = useCallback(async () => {
         try {
             setLoading(true);
-            const params = new URLSearchParams();
-            if (searchTerm) params.append('search', searchTerm);
+            const params: Record<string, string> = {};
+            if (searchTerm) params.search = searchTerm;
 
-            const res = await fetch(`/api/admin/procedures?${params}`);
-            if (!res.ok) {
-                throw new Error('Failed to fetch procedures');
-            }
-
-            const data = await res.json();
+            const data = await api.get<Procedure[]>('/admin/procedures', params);
             setProcedures(data);
             setError('');
         } catch (err) {
@@ -115,14 +111,7 @@ export default function ProceduresPage() {
         if (!deleteDialog.procedure) return;
 
         try {
-            const res = await fetch(`/api/admin/procedures/${deleteDialog.procedure.id}`, {
-                method: 'DELETE',
-            });
-
-            if (!res.ok) {
-                const errorData = await res.json();
-                throw new Error(errorData.error || 'Failed to delete procedure');
-            }
+            await api.delete(`/admin/procedures/${deleteDialog.procedure.id}`);
 
             toast.success('Xóa quy chế thành công');
             fetchProcedures();

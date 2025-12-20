@@ -24,6 +24,7 @@ import {
 import { Close as CloseIcon, CloudUpload as CloudUploadIcon } from '@mui/icons-material';
 import { ActivityFormData } from '@/types/activity';
 import { toast } from 'react-toastify';
+import { api } from '@/lib/api';
 
 interface Category {
     id: string;
@@ -57,9 +58,7 @@ export default function AddActivityPage() {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await fetch('/api/admin/categories/activity');
-                if (!response.ok) throw new Error('Lỗi khi tải danh mục');
-                const data = await response.json();
+                const data = await api.get<Category[]>('/admin/categories/activity');
                 setCategories(data);
             } catch (err) {
                 console.error('Error fetching categories:', err);
@@ -147,16 +146,7 @@ export default function AddActivityPage() {
         formData.images?.forEach((file) => submitData.append('images', file));
 
         try {
-            const res = await fetch('/api/admin/activities', {
-                method: 'POST',
-                body: submitData,
-            });
-            if (!res.ok) {
-                const err = await res.json();
-                toast.error(err.error);
-                setSubmitLoading(false);
-                return;
-            }
+            await api.post('/admin/activities', submitData);
             router.push('/admin/activities');
         } catch (err) {
             toast.error((err as Error).message || 'Lỗi không mong muốn');

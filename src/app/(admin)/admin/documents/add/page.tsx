@@ -19,6 +19,7 @@ import {
 } from '@mui/material';
 import { CloudUpload as CloudUploadIcon, Close as CloseIcon } from '@mui/icons-material';
 import { toast } from 'react-toastify';
+import { api } from '@/lib/api';
 
 interface DocumentCategory {
     id: string;
@@ -52,11 +53,8 @@ export default function AddDocumentPage() {
     const loadCategories = useCallback(async () => {
         try {
             setCategoriesLoading(true);
-            const response = await fetch('/api/admin/categories/document');
-            if (!response.ok) throw new Error('Error loading categories');
-
-            const { data } = await response.json();
-            const categories: DocumentCategory[] = data || [];
+            const data = await api.get<DocumentCategory[]>('/admin/categories/document');
+            const categories: DocumentCategory[] = Array.isArray(data) ? data : (data as any)?.data || [];
 
             // Separate types and fields
             const types = categories
@@ -134,7 +132,7 @@ export default function AddDocumentPage() {
         }
 
         // Determine file types for all selected files
-        const fileTypes = fileArray.map((file) => {
+        const newFileTypes = fileArray.map((file) => {
             if (file.type.startsWith('image/')) {
                 return 'image';
             }
@@ -142,14 +140,14 @@ export default function AddDocumentPage() {
         });
 
         // Create previews for all files
-        const previews = fileArray.map((file) => URL.createObjectURL(file));
+        const newPreviews = fileArray.map((file) => URL.createObjectURL(file));
 
         setFormData((prev) => ({
             ...prev,
-            files: fileArray,
-            fileTypes,
+            files: [...prev.files, ...fileArray],
+            fileTypes: [...prev.fileTypes, ...newFileTypes],
         }));
-        setFilePreviews(previews);
+        setFilePreviews((prev) => [...prev, ...newPreviews]);
     };
 
     const handleRemoveFile = (index: number) => {
@@ -179,25 +177,15 @@ export default function AddDocumentPage() {
             submitData.append('date', formData.date);
             submitData.append('field', formData.field);
             submitData.append('summary', formData.summary);
-            submitData.append('isNew', formData.isNew.toString());
+            submitData.append('isNew', formData.isNew ? '1' : '0');
 
-            // Append all files with same key 'file'
+            // Append all files with same key 'file' to match Reform logic
             for (let i = 0; i < formData.files.length; i++) {
-                submitData.append('file', formData.files[i]);
+                submitData.append('file[]', formData.files[i]);
                 submitData.append(`fileType_${i}`, formData.fileTypes[i]);
             }
 
-            const res = await fetch('/api/admin/documents', {
-                method: 'POST',
-                body: submitData,
-            });
-
-            if (!res.ok) {
-                const err = await res.json();
-                toast.error(err.error || 'Lỗi lưu tài liệu');
-                setSubmitLoading(false);
-                return;
-            }
+            await api.post('/admin/documents', submitData);
 
             toast.success(`Đã lưu ${formData.files.length} file vào 1 tài liệu thành công`);
             router.push('/admin/documents');
