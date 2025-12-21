@@ -1,8 +1,16 @@
 <?php
 // Handle CORS
 if (isset($_SERVER['HTTP_ORIGIN'])) {
-    // header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
-    header("Access-Control-Allow-Origin: https://your-vercel-app.vercel.app");
+    // Cho phép cả domain Vercel và domain chính chủ
+    $allowed_origins = [
+        'https://nextjs-amis.vercel.app',
+        'https://amis.edu.vn',
+        'https://www.amis.edu.vn'
+    ];
+    $origin = $_SERVER['HTTP_ORIGIN'];
+    if (in_array($origin, $allowed_origins)) {
+        header("Access-Control-Allow-Origin: $origin");
+    }
     header('Access-Control-Allow-Credentials: true');
     header('Access-Control-Max-Age: 86400');    // cache for 1 day
 }
