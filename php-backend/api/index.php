@@ -38,9 +38,11 @@ foreach (glob("controllers/*.php") as $filename) {
 
 // Simple Router
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-$scriptName = dirname($_SERVER['SCRIPT_NAME']); // e.g., /api
-$uri = str_replace($scriptName, '', $uri);      // Remove /api prefix
-$uri = '/' . ltrim($uri, '/');                  // Ensure leading slash
+$scriptDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
+if ($scriptDir !== '/') {
+    $uri = preg_replace('#^' . preg_quote($scriptDir, '#') . '#', '', $uri);
+}
+$uri = '/' . ltrim($uri, '/');
 
 $method = $_SERVER['REQUEST_METHOD'];
 
