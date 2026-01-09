@@ -16,6 +16,7 @@ import { api } from '@/lib/api';
 import { Visibility, VisibilityOff, School } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import { useAuthGuard } from '@/hooks/useAuthGuard';
 import { toast } from 'react-toastify';
 
 export default function Login() {
@@ -26,6 +27,12 @@ export default function Login() {
     const [loading, setLoading] = useState(false);
 
     const { login } = useAuth();
+    
+    // Redirect if already logged in
+    const { isLoading: authLoading } = useAuthGuard({
+        redirectIfAuthenticated: true,
+        redirectTo: '/admin/activities'
+    });
 
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
@@ -62,6 +69,15 @@ export default function Login() {
             setLoading(false);
         }
     };
+
+    // Show loading while checking auth
+    if (authLoading) {
+        return (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+                <CircularProgress />
+            </Box>
+        );
+    }
 
     return (
         <Box

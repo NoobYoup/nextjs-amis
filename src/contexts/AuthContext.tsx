@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
+import { toast } from 'react-toastify';
 
 export interface User {
     id: string;
@@ -21,14 +22,14 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
-// Config API URL - Change this to your PHP Backend URL
-// For development, you might use localhost if PHP is running locally
-// In production, this should be the absolute URL to your /api
+// Config
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes in milliseconds
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [lastActivityTime, setLastActivityTime] = useState<number>(Date.now());
     const router = useRouter();
 
     const checkAuth = async () => {
@@ -49,6 +50,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             if (res.ok) {
                 const userData = await res.json();
                 setUser(userData);
+                setLastActivityTime(Date.now()); // Reset activity time on successful auth
             } else {
                 // If token invalid, clear it
                 localStorage.removeItem('token');
@@ -56,7 +58,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             }
         } catch (error) {
             console.error('Auth check failed:', error);
-            // Don't clear user immediately on network error, but here we assume invalid
         } finally {
             setIsLoading(false);
         }
@@ -66,12 +67,47 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         checkAuth();
     }, []);
 
+    // Update activity time on user interaction
+    const updateActivity = () => {
+        setLastActivityTime(Date.now());
+    };
+
+    // Check for session timeout every minute
+    useEffect(() => {
+        if (!user) return;
+        
+        const interval = setInterval(() => {
+            const now = Date.now();
+            if (now - lastActivityTime > SESSION_TIMEOUT) {
+                logout();
+                toast.info('Phiên đăng nhập đã hết hạn do không hoạt động');
+            }
+        }, 60000); // Check every minute
+        
+        return () => clearInterval(interval);
+    }, [user, lastActivityTime]);
+
+    // Add global activity listeners
+    useEffect(() => {
+        if (!user) return;
+        
+        const events = ['mousedown', 'keydown', 'scroll', 'touchstart'];
+        events.forEach(event => {
+            window.addEventListener(event, updateActivity);
+        });
+        
+        return () => {
+            events.forEach(event => {
+                window.removeEventListener(event, updateActivity);
+            });
+        };
+    }, [user]);
+
     const login = (token: string, userData: User) => {
         localStorage.setItem('token', token);
-        // We can also store user in localStorage for faster initial load, 
-        // but verify with API is safer.
         setUser(userData);
-        router.push('/admin/activities'); // Default admin page
+        setLastActivityTime(Date.now());
+        router.push('/admin/activities');
     };
 
     const logout = () => {
