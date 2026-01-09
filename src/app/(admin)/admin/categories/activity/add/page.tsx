@@ -35,7 +35,7 @@ export default function AddCategoryPage() {
 
     return (
         <Box sx={{ py: 4, bgcolor: 'var(--background)', minHeight: '100vh' }}>
-            <Container maxWidth="lg">
+            <Container maxWidth="xl">
                 {/* Header */}
                 <Box sx={{ mb: 4 }}>
                     <Typography variant="h4" sx={{ fontWeight: 700, color: 'var(--foreground)' }}>

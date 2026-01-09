@@ -113,7 +113,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const logout = () => {
         localStorage.removeItem('token');
         setUser(null);
-        router.push('/login');
+        
+        // Only redirect to login if currently on admin pages
+        const currentPath = window.location.pathname;
+        if (currentPath.startsWith('/admin')) {
+            router.push('/login');
+        }
+        // If on client pages, just clear auth without redirecting
     };
 
     return (

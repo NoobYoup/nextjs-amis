@@ -256,7 +256,7 @@ export default function ReformUpdateClient({ id }: ReformUpdateClientProps) {
 
     return (
         <Box sx={{ py: 4, bgcolor: 'var(--background)', minHeight: '100vh' }}>
-            <Container maxWidth="lg">
+            <Container maxWidth="xl">
                 <Breadcrumbs sx={{ mb: 3 }}>
                     <Link
                         component="button"

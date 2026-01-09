@@ -77,6 +77,7 @@ export default function ActivitiesPage() {
 
             const { data, pages } = await api.get<{ data: Activity[]; pages: number }>(`/client/activities?${params}`);
             
+            console.log(data);
             setActivities(data);
             setTotalPages(pages);
         } catch (error) {

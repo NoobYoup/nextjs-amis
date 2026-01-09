@@ -155,7 +155,7 @@ export default function ProceduresPage() {
 
     return (
         <Box sx={{ py: 4, bgcolor: 'var(--background)', minHeight: '100vh' }}>
-            <Container maxWidth="lg">
+            <Container maxWidth="xl">
                 {/* Breadcrumb */}
                 <Breadcrumbs sx={{ mb: 3 }}>
                     <Link

@@ -201,7 +201,7 @@ export default function ActivityUpdateClient({ id }: ActivityUpdateClientProps) 
 
     return (
         <Box sx={{ py: 4, bgcolor: 'var(--background)', minHeight: '100vh' }}>
-            <Container maxWidth="lg">
+            <Container maxWidth="xl">
                 <Box sx={{ mb: 4 }}>
                     <Typography variant="h4" sx={{ fontWeight: 700, color: 'var(--foreground)' }}>
                         Cập Nhật Hoạt Động

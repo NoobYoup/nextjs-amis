@@ -151,8 +151,9 @@ export default function AddActivityPage() {
             toast.error('Vui lòng chọn ngày');
             return;
         }
-        if (!formData.author?.trim()) {
-            toast.error('Vui lòng nhập tác giả');
+     
+        if (!formData.images?.length) {
+            toast.error('Vui lòng chọn ít nhất một hình ảnh');
             return;
         }
 
@@ -166,7 +167,7 @@ export default function AddActivityPage() {
         submitData.append('author', formData.author.trim());
         submitData.append('videos', formData.videos?.join('\n') || '');
 
-        formData.images?.forEach((file) => submitData.append('images', file));
+        formData.images?.forEach((file) => submitData.append('images[]', file));
 
         try {
             await api.post('/admin/activities', submitData);

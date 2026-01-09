@@ -113,8 +113,8 @@ export default function ChangePasswordPage() {
 
         setLoading(true);
         try {
-            await api.put('/admin/change-password', {
-                currentPassword: formData.currentPassword,
+            await api.put('/admin/settings/password', {
+                oldPassword: formData.currentPassword,
                 newPassword: formData.newPassword,
             });
 
@@ -136,7 +136,7 @@ export default function ChangePasswordPage() {
     };
 
     return (
-        <Container maxWidth="lg" sx={{ mt: 2 }}>
+        <Container maxWidth="xl" sx={{ mt: 2 }}>
             <Box sx={{ mb: 4 }}>
                 <Typography variant="h4" sx={{ fontWeight: 700, color: 'var(--foreground)' }}>
                     Thay đổi mật khẩu

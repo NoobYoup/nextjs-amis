@@ -174,12 +174,6 @@ export default function AddDocumentPage() {
             return;
         }
 
-        if (!formData.number) {
-            toast.error('Vui lòng nhập số tài liệu');
-            setSubmitLoading(false);
-            return;
-        }
-
         if (!formData.date) {
             toast.error('Vui lòng chọn ngày');
             setSubmitLoading(false);
@@ -226,7 +220,7 @@ export default function AddDocumentPage() {
 
     return (
         <Box sx={{ py: 4, bgcolor: 'var(--background)', minHeight: '100vh' }}>
-            <Container maxWidth="lg">
+            <Container maxWidth="xl">
                 {/* Breadcrumb */}
                 <Breadcrumbs sx={{ mb: 3 }}>
                     <Link

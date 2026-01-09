@@ -212,7 +212,7 @@ export default function AddReformPage() {
 
             // Append all files with same key 'file'
             for (let i = 0; i < formData.files.length; i++) {
-                submitData.append('file', formData.files[i]);
+                submitData.append('file[]', formData.files[i]);
                 submitData.append(`fileType_${i}`, formData.fileTypes[i]);
             }
 
