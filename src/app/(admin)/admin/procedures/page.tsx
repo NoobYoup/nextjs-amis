@@ -84,8 +84,9 @@ export default function ProceduresPage() {
             const params: Record<string, string> = {};
             if (searchTerm) params.search = searchTerm;
 
-            const data = await api.get<Procedure[]>('/admin/procedures', params);
-            setProcedures(data);
+            const response = await api.get<{ data: Procedure[]; total: number }>('/admin/procedures', params);
+            console.log(response.data)
+            setProcedures(response.data || []);
             setError('');
         } catch (err) {
             setError((err as Error).message || 'Có lỗi xảy ra khi tải dữ liệu');

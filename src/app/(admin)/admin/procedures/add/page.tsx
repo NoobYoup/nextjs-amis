@@ -222,7 +222,7 @@ export default function AddProcedurePage() {
 
         // Validation
         if (!formData.title.trim() || !formData.category.trim() || !formData.description.trim()) {
-            setError('Vui lòng điền đầy đủ tiêu đề, danh mục và mô tả');
+            toast.error('Vui lòng điền đầy đủ tiêu đề, danh mục và mô tả');
             setSubmitLoading(false);
             return;
         }
@@ -231,7 +231,7 @@ export default function AddProcedurePage() {
             (section) => section.title.trim() !== '' && section.items.some((item) => item.trim() !== ''),
         );
         if (validContent.length === 0) {
-            setError('Vui lòng thêm ít nhất một mục nội dung');
+            toast.error('Vui lòng thêm ít nhất một mục nội dung');
             setSubmitLoading(false);
             return;
         }

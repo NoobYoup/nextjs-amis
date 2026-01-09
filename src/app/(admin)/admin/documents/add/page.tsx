@@ -162,6 +162,31 @@ export default function AddDocumentPage() {
     const handleSave = async () => {
         setSubmitLoading(true);
 
+        if (!formData.title) {
+            toast.error('Vui lòng nhập tiêu đề');
+            setSubmitLoading(false);
+            return;
+        }
+
+        if (!formData.type) {
+            toast.error('Vui lòng chọn loại văn bản');
+            setSubmitLoading(false);
+            return;
+        }
+
+        if (!formData.number) {
+            toast.error('Vui lòng nhập số tài liệu');
+            setSubmitLoading(false);
+            return;
+        }
+
+        if (!formData.date) {
+            toast.error('Vui lòng chọn ngày');
+            setSubmitLoading(false);
+            return;
+        }
+
+
         if (formData.files.length === 0) {
             toast.error('Vui lòng chọn ít nhất một file');
             setSubmitLoading(false);

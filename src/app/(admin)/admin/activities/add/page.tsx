@@ -133,22 +133,47 @@ export default function AddActivityPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        // Validation
+        if (!formData.title?.trim()) {
+            toast.error('Vui lòng nhập tiêu đề');
+            return;
+        }
+        if (!formData.description?.trim()) {
+            toast.error('Vui lòng nhập mô tả');
+            return;
+        }
+        if (!formData.category) {
+            toast.error('Vui lòng chọn danh mục');
+            return;
+        }
+        if (!formData.date) {
+            toast.error('Vui lòng chọn ngày');
+            return;
+        }
+        if (!formData.author?.trim()) {
+            toast.error('Vui lòng nhập tác giả');
+            return;
+        }
+
         setSubmitLoading(true);
 
         const submitData = new FormData();
-        submitData.append('title', formData.title || '');
-        submitData.append('description', formData.description || '');
-        submitData.append('category', formData.category || '');
-        submitData.append('date', formData.date || '');
-        submitData.append('author', formData.author || '');
+        submitData.append('title', formData.title.trim());
+        submitData.append('description', formData.description.trim());
+        submitData.append('category', formData.category);
+        submitData.append('date', formData.date);
+        submitData.append('author', formData.author.trim());
         submitData.append('videos', formData.videos?.join('\n') || '');
 
         formData.images?.forEach((file) => submitData.append('images', file));
 
         try {
             await api.post('/admin/activities', submitData);
+            toast.success('Thêm hoạt động thành công!');
             router.push('/admin/activities');
         } catch (err) {
+            console.log(err);
             toast.error((err as Error).message || 'Lỗi không mong muốn');
             setSubmitLoading(false);
         }
@@ -156,7 +181,7 @@ export default function AddActivityPage() {
 
     return (
         <Box sx={{ py: 4, bgcolor: 'var(--background)', minHeight: '100vh' }}>
-            <Container maxWidth="lg">
+            <Container maxWidth="xl">
                 {/* Header */}
                 <Box sx={{ mb: 4 }}>
                     <Typography variant="h4" sx={{ fontWeight: 700, color: 'var(--foreground)' }}>

@@ -67,8 +67,9 @@ export default function DocumentCategoriesPage() {
     const fetchCategories = async () => {
         try {
             setLoading(true);
-            const response = await api.get<{ data: DocumentCategory[] }>('/admin/categories/document');
-            setCategories(response.data || []);
+            const response = await api.get<DocumentCategory[]>('/admin/categories/document');
+            
+            setCategories(response || []);
         } catch (error) {
             console.error('Error fetching categories:', error);
             toast.error('Có lỗi xảy ra khi tải danh sách danh mục');
@@ -178,7 +179,7 @@ export default function DocumentCategoriesPage() {
     }
 
     return (
-        <Container maxWidth="lg" sx={{ mt: 2 }}>
+        <Container maxWidth="xl" sx={{ mt: 2 }}>
             <Box sx={{ mb: 4 }}>
                 <Typography variant="h4" sx={{ fontWeight: 700, color: 'var(--foreground)' }}>
                     Quản lý danh mục tài liệu

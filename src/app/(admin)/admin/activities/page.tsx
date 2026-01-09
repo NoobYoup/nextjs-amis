@@ -218,6 +218,8 @@ export default function ActivitiesPage() {
                     sx={{ bgcolor: '#fff', mt: 2, display: 'flex', justifyContent: 'center' }}
                 />
 
+                
+
                 {/* Delete Dialog */}
                 <Dialog open={deleteDialogOpen} onClose={handleCloseDeleteDialog}>
                     <DialogTitle>Xác nhận xóa</DialogTitle>

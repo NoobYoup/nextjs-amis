@@ -61,6 +61,7 @@ class DocumentController extends Controller {
 
         $this->json([
             'data' => $rows,
+            'total' => (int)$totalItems,
             'pages' => $totalPages,
             'current' => $page
         ]);

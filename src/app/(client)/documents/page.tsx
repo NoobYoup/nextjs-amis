@@ -267,14 +267,14 @@ export default function DocumentsPage() {
                                                 }}
                                             />
                                             {doc.number && <Chip label={doc.number} size="small" variant="outlined" />}
-                                            <Chip label={doc.field} size="small" color="default" />
-                                            {doc.isNew && (
+                                            {/* <Chip label={doc.field} size="small" color="default" /> */}
+                                            {/* {doc.isNew && (
                                                 <Chip
                                                     label="Mới"
                                                     size="small"
                                                     sx={{ bgcolor: '#f44336', color: 'white' }}
                                                 />
-                                            )}
+                                            )} */}
                                         </Box>
                                         <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>
                                             {doc.title}

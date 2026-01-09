@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { api, API_URL } from '@/lib/api';
+import { api, API_URL, getMediaUrl } from '@/lib/api';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -76,6 +76,7 @@ export default function ProceduresPage() {
                 }
 
                 const data = await api.get<{ data: Procedure[] }>(`/client/procedures?${params}`);
+                console.log(data.data)
                 setProcedures(data.data);
                 setError('');
             } catch (err) {
@@ -478,7 +479,7 @@ export default function ProceduresPage() {
 
                                 <Box
                                     component="img"
-                                    src={currentProcedureImages[selectedImageIndex]?.fileUrl}
+                                    src={getMediaUrl(currentProcedureImages[selectedImageIndex]?.fileUrl)}
                                     alt={`Image ${selectedImageIndex + 1}`}
                                     sx={{
                                         maxWidth: '100%',

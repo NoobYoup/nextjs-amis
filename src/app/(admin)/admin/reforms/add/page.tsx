@@ -43,7 +43,6 @@ export default function AddReformPage() {
     const [dragActive, setDragActive] = useState(false);
     const [filePreviews, setFilePreviews] = useState<string[]>([]);
     const [submitLoading, setSubmitLoading] = useState(false);
-    const [error, setError] = useState('');
     const [openImageGallery, setOpenImageGallery] = useState(false);
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
@@ -129,7 +128,6 @@ export default function AddReformPage() {
             fileTypes,
         }));
         setFilePreviews(previews);
-        setError('');
     };
 
     const handleRemoveFile = (index: number) => {
@@ -183,25 +181,24 @@ export default function AddReformPage() {
     };
 
     const handleSave = async () => {
-        setError('');
         setSubmitLoading(true);
 
         // Validation
         if (!formData.title.trim() || !formData.description.trim()) {
-            setError('Vui lòng điền đầy đủ tiêu đề và mô tả');
+            toast.error('Vui lòng điền đầy đủ tiêu đề và mô tả');
             setSubmitLoading(false);
             return;
         }
 
         const validDetails = formData.details.filter((detail) => detail.trim() !== '');
         if (validDetails.length === 0) {
-            setError('Vui lòng thêm ít nhất một mục chi tiết');
+            toast.error('Vui lòng thêm ít nhất một mục chi tiết');
             setSubmitLoading(false);
             return;
         }
 
         if (formData.files.length === 0) {
-            setError('Vui lòng chọn ít nhất một file');
+            toast.error('Vui lòng chọn ít nhất một file');
             setSubmitLoading(false);
             return;
         }
@@ -224,7 +221,7 @@ export default function AddReformPage() {
             toast.success(`Đã tạo mục công khai với ${formData.files.length} file thành công`);
             router.push('/admin/reforms');
         } catch (err) {
-            setError((err as Error).message || 'Có lỗi xảy ra. Vui lòng thử lại.');
+            toast.error((err as Error).message || 'Có lỗi xảy ra. Vui lòng thử lại.');
             setSubmitLoading(false);
         }
     };
@@ -261,13 +258,7 @@ export default function AddReformPage() {
                     </Typography>
                 </Box>
 
-                {/* Error Alert */}
-                {error && (
-                    <Alert severity="error" sx={{ mb: 3 }}>
-                        {error}
-                    </Alert>
-                )}
-
+                
                 {/* Info Box */}
                 <Card
                     sx={{

@@ -1,28 +1,49 @@
 <?php
 // Handle CORS
-if (isset($_SERVER['HTTP_ORIGIN'])) {
-    // Cho phép cả domain Vercel và domain chính chủ
-    $allowed_origins = [
-        'https://nextjs-amis.vercel.app',
-        'https://amis.edu.vn',
-        'https://www.amis.edu.vn'
-    ];
-    $origin = $_SERVER['HTTP_ORIGIN'];
-    if (in_array($origin, $allowed_origins)) {
-        header("Access-Control-Allow-Origin: $origin");
+// Helper to get Origin
+function getOrigin() {
+    if (isset($_SERVER['HTTP_ORIGIN'])) return $_SERVER['HTTP_ORIGIN'];
+    if (function_exists('getallheaders')) {
+        $headers = getallheaders();
+        if (isset($headers['Origin'])) return $headers['Origin'];
+        if (isset($headers['origin'])) return $headers['origin'];
     }
+    return '';
+}
+
+// 1. Handle CORS (Aggressive)
+$origin = getOrigin();
+$allowed_origins = [
+    'https://nextjs-amis.vercel.app',
+    'https://amis.edu.vn',
+    'https://www.amis.edu.vn',
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'http://localhost:3002'
+];
+
+if (!empty($origin) && in_array($origin, $allowed_origins)) {
+    header("Access-Control-Allow-Origin: $origin");
     header('Access-Control-Allow-Credentials: true');
     header('Access-Control-Max-Age: 86400');    // cache for 1 day
 }
 
-// Access-Control headers are received during OPTIONS requests
+// 2. Handle Preflight OPTIONS Request Immediately
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+    // Re-set Allow-Origin for OPTIONS just in case
+    if (!empty($origin) && in_array($origin, $allowed_origins)) {
+        header("Access-Control-Allow-Origin: $origin");
+        header('Access-Control-Allow-Credentials: true');
+    }
+
     if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD']))
         header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");         
 
     if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']))
         header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}");
-
+    
+    // Explicitly set 200 OK
+    http_response_code(200);
     exit(0);
 }
 

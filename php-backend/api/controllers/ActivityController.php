@@ -63,6 +63,7 @@ class ActivityController extends Controller {
 
         $this->json([
             'data' => $data,
+            'total' => (int)$totalItems,
             'pages' => $totalPages,
             'current' => $page
         ]);
