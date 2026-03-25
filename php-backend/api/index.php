@@ -17,6 +17,9 @@ $allowed_origins = [
     'https://nextjs-amis.vercel.app',
     'https://amis.edu.vn',
     'https://www.amis.edu.vn',
+    'http://amis.edu.vn',
+    'http://www.amis.edu.vn',
+    'http://api.amis.edu.vn',
     'http://localhost:3000',
     'http://localhost:3001',
     'http://localhost:3002'

@@ -4,8 +4,8 @@ import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Link from 'next/link';
-import FacebookIcon from '@mui/icons-material/Facebook';
-import YouTubeIcon from '@mui/icons-material/YouTube';
+// import FacebookIcon from '@mui/icons-material/Facebook';
+// import YouTubeIcon from '@mui/icons-material/YouTube';
 // import TikTokIcon from '@mui/icons-material/TikTok';
 
 export default function Footer() {
@@ -29,24 +29,27 @@ export default function Footer() {
                                 target="_blank"
                                 style={{ color: 'rgba(255,255,255,0.8)', display: 'flex', alignItems: 'center' }}
                             >
-                                <FacebookIcon sx={{ mr: 1 }} /> Facebook
+                                {/* <FacebookIcon sx={{ mr: 1 }} />  */}
+                                Facebook
                             </Link>
                             <Link
                                 href="https://www.youtube.com/@AmisTruongQT"
                                 target="_blank"
                                 style={{ color: 'rgba(255,255,255,0.8)', display: 'flex', alignItems: 'center' }}
                             >
-                                <YouTubeIcon sx={{ mr: 1 }} /> YouTube
+                                {/* <YouTubeIcon sx={{ mr: 1 }} /> */}
+                                 YouTube
                             </Link>
                             <Link
                                 href="https://www.tiktok.com/@_truongquoctemyuc_"
                                 target="_blank"
                                 style={{ color: 'rgba(255,255,255,0.8)', display: 'flex', alignItems: 'center' }}
                             >
-                                <i
+                                {/* <i
                                     className="fa-brands fa-tiktok"
                                     style={{ marginRight: '12px', fontSize: '16px' }}
-                                ></i>{' '}
+                                ></i>{' '} */}
+                                
                                 TikTok
                             </Link>
                         </Box>
@@ -68,7 +71,7 @@ export default function Footer() {
                     <Typography>
                         &copy; 2025 AMIS School. Powered by{' '}
                         <Link
-                            href={'https://www.facebook.com/noobyoup'}
+                            href={'https://linktr.ee/noobyoup'}
                             style={{ textDecoration: 'underline', color: 'var(--primary-color)' }}
                             target="_blank"
                         >

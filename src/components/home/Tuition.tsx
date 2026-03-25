@@ -22,33 +22,33 @@ export default function Tuition() {
     const secondaryColor = '#2e7d32';
 
     const elementaryData = [
-        { grade: 'Pre', tuition: '5,690,000' },
-        { grade: 'Lớp 1', tuition: '5,690,000' },
-        { grade: 'Lớp 2', tuition: '5,690,000' },
-        { grade: 'Lớp 3', tuition: '6,290,000' },
-        { grade: 'Lớp 4', tuition: '6,490,000' },
-        { grade: 'Lớp 5', tuition: '6,390,000' },
+        { grade: 'Pre', tuition: '5,990,000' },
+        { grade: 'Lớp 1', tuition: '6,390,000' },
+        { grade: 'Lớp 2', tuition: '6,590,000' },
+        { grade: 'Lớp 3', tuition: '6,690,000' },
+        { grade: 'Lớp 4', tuition: '6,790,000' },
+        { grade: 'Lớp 5', tuition: '6,890,000' },
     ];
 
     const middleSchoolData = [
-        { grade: 'Lớp 6', tuition: '7,290,000' },
-        { grade: 'Lớp 7', tuition: '7,590,000' },
-        { grade: 'Lớp 8', tuition: '7,590,000' },
-        { grade: 'Lớp 9', tuition: '7,690,000' },
+        { grade: 'Lớp 6', tuition: '7,590,000' },
+        { grade: 'Lớp 7', tuition: '7,690,000' },
+        { grade: 'Lớp 8', tuition: '7,890,000' },
+        { grade: 'Lớp 9', tuition: '7,990,000' },
     ];
 
     const includedFees = ['Chi phí ăn sáng, ăn trưa và ăn xế'];
 
     const notIncludedFees = [
         'Phí đồng phục',
-        'Phí ngoại khóa',
-        'Phí sách giáo khoa',
-        'Phí cơ sở vật chất (2,990,000 đồng/năm)',
+        'Phí hoạt động ngoại khóa',
+        'Phí cơ sở vật chất: 2.990.000đ/năm',
+        'Các khoản phí khác',
     ];
 
     const discountPolicy = [
-        { description: 'Học sinh thứ 2 trong cùng gia đình', discount: 'Giảm 5%' },
-        { description: 'Học sinh thứ 3 trong cùng gia đình', discount: 'Giảm 10%' },
+        { description: 'Học sinh đóng một lần cả năm (10 tháng)', discount: 'Giảm 5%' },
+        { description: 'Học sinh có anh/chị/em cùng học tại trường', discount: 'Giảm 5%' },
     ];
 
     const TuitionTable = ({ data, title }: { data: typeof elementaryData; title: string }) => (
@@ -165,7 +165,7 @@ export default function Tuition() {
                             mb: 2,
                         }}
                     >
-                        Phí Ghi Danh
+                        Phí Ghi Danh + Hồ Sơ Đăng Ký
                     </Typography>
                     <Paper sx={{ p: 3, backgroundColor: 'rgba(124, 179, 66, 0.05)' }}>
                         <Typography sx={{ fontSize: '1.1rem', color: '#333' }}>
@@ -326,10 +326,10 @@ export default function Tuition() {
                     </Typography>
                     <Grid container spacing={2}>
                         {[
-                            { period: 'Đợt 1', date: '01/08/2025', months: '2 tháng' },
-                            { period: 'Đợt 2', date: '01/10/2025', months: '3 tháng' },
-                            { period: 'Đợt 3', date: '01/01/2026', months: '2 tháng' },
-                            { period: 'Đợt 4', date: '01/03/2026', months: '3 tháng' },
+                            { period: 'Đợt 1', date: '01/08/2026', months: '2 tháng' },
+                            { period: 'Đợt 2', date: '01/10/2026', months: '3 tháng' },
+                            { period: 'Đợt 3', date: '01/01/2027', months: '2 tháng' },
+                            { period: 'Đợt 4', date: '01/03/2027', months: '3 tháng' },
                         ].map((schedule, index) => (
                             <Grid size={{ xs: 12, sm: 6, md: 3 }} key={index}>
                                 <Paper
