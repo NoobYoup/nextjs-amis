@@ -33,14 +33,16 @@ import {
     Delete as DeleteIcon,
     Search as SearchIcon,
     Image as ImageIcon,
+    AttachFile as AttachFileIcon,
 } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 
-interface NewsImage {
+interface NewsFile {
     id: string;
-    imageUrl: string;
-    order: number;
+    fileUrl: string;
+    fileType: string;
+    fileName: string;
 }
 
 interface News {
@@ -52,6 +54,7 @@ interface News {
     date: string;
     thumbnail: string | null;
     images: NewsImage[];
+    files: NewsFile[];
     createdAt: string;
     updatedAt: string;
 }
@@ -64,11 +67,8 @@ export default function NewsListPage() {
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [totalCount, setTotalCount] = useState(0);
     const [searchTerm, setSearchTerm] = useState('');
-    const [categoryFilter, setCategoryFilter] = useState('all');
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [newsToDelete, setNewsToDelete] = useState<News | null>(null);
-
-    const categories = ['all', 'Tiểu học', 'Trung học'];
 
     // Fetch news data
     const fetchNews = useCallback(async () => {
@@ -83,10 +83,6 @@ export default function NewsListPage() {
                 params.append('search', searchTerm);
             }
 
-            if (categoryFilter !== 'all') {
-                params.append('category', categoryFilter);
-            }
-
             const data = await api.get<{ data: News[]; pagination: { total: number } }>(`/admin/news?${params}`);
             
             setNews(data.data);
@@ -97,7 +93,7 @@ export default function NewsListPage() {
         } finally {
             setLoading(false);
         }
-    }, [page, rowsPerPage, searchTerm, categoryFilter]);
+    }, [page, rowsPerPage, searchTerm]);
 
     useEffect(() => {
         fetchNews();
@@ -159,14 +155,13 @@ export default function NewsListPage() {
                 </Button>
             </Box>
 
-            {/* Filters */}
-            <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>
+            <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
                 <TextField
-                    placeholder="Tìm kiếm tin tức..."
+                    placeholder="Tìm kiếm tin tức (tiêu đề, mô tả, nội dung)..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                    sx={{ minWidth: 300 }}
+                    fullWidth
                     InputProps={{
                         endAdornment: (
                             <IconButton onClick={handleSearch}>
@@ -175,16 +170,6 @@ export default function NewsListPage() {
                         ),
                     }}
                 />
-                <FormControl sx={{ minWidth: 150 }}>
-                    <InputLabel>Danh mục</InputLabel>
-                    <Select value={categoryFilter} label="Danh mục" onChange={(e) => setCategoryFilter(e.target.value)}>
-                        {categories.map((category) => (
-                            <MenuItem key={category} value={category}>
-                                {category === 'all' ? 'Tất cả' : category}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
             </Box>
 
             {/* Table */}
@@ -196,7 +181,7 @@ export default function NewsListPage() {
                             <TableCell sx={{ fontWeight: 700 }}>Tiêu đề</TableCell>
                             <TableCell sx={{ fontWeight: 700 }}>Danh mục</TableCell>
                             <TableCell sx={{ fontWeight: 700 }}>Ngày xuất bản</TableCell>
-                            <TableCell sx={{ fontWeight: 700 }}>Số ảnh</TableCell>
+                            <TableCell sx={{ fontWeight: 700 }}>Đính kèm</TableCell>
                             <TableCell sx={{ fontWeight: 700, textAlign: 'center' }}>Thao tác</TableCell>
                         </TableRow>
                     </TableHead>
@@ -251,12 +236,22 @@ export default function NewsListPage() {
                                     </TableCell>
                                     <TableCell>{formatDate(item.date)}</TableCell>
                                     <TableCell>
-                                        <Chip
-                                            label={`${item.images.length} ảnh`}
-                                            variant="outlined"
-                                            size="small"
-                                            icon={<ImageIcon />}
-                                        />
+                                        <Box sx={{ display: 'flex', gap: 1 }}>
+                                            <Chip
+                                                label={item.images.length}
+                                                variant="outlined"
+                                                size="small"
+                                                icon={<ImageIcon />}
+                                                title="Số ảnh"
+                                            />
+                                            <Chip
+                                                label={item.files?.length || 0}
+                                                variant="outlined"
+                                                size="small"
+                                                icon={<AttachFileIcon />}
+                                                title="Số tệp đính kèm"
+                                            />
+                                        </Box>
                                     </TableCell>
                                     <TableCell sx={{ textAlign: 'center' }}>
                                         <IconButton

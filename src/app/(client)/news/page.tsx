@@ -28,7 +28,7 @@ interface NewsArticle {
 
 export default function NewsPage() {
     const router = useRouter();
-    const [selectedCategory, setSelectedCategory] = useState('all');
+    const [selectedCategory, setSelectedCategory] = useState('Tất cả');
     const [currentPage, setCurrentPage] = useState(1);
     const [news, setNews] = useState<NewsArticle[]>([]);
     const [loading, setLoading] = useState(true);
@@ -36,7 +36,7 @@ export default function NewsPage() {
     const [error, setError] = useState('');
     const itemsPerPage = 9;
 
-    const categories = ['all', 'Tiểu học', 'Trung học'];
+    const categories = ['Tất cả', 'Tiểu học', 'Trung học'];
 
     // Fetch news from API
     const fetchNews = useCallback(async () => {
@@ -47,7 +47,7 @@ export default function NewsPage() {
                 limit: itemsPerPage.toString(),
             });
 
-            if (selectedCategory !== 'all') {
+            if (selectedCategory !== 'Tất cả') {
                 params.append('category', selectedCategory);
             }
 
@@ -126,7 +126,7 @@ export default function NewsPage() {
                         }}
                     >
                         {categories.map((category) => (
-                            <Tab key={category} label={category === 'all' ? 'Tất cả' : category} value={category} />
+                            <Tab key={category} label={category} value={category} />
                         ))}
                     </Tabs>
                 </Box>
@@ -157,96 +157,121 @@ export default function NewsPage() {
                             Chưa có tin tức nào
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                            {selectedCategory === 'all'
+                            {selectedCategory === 'Tất cả'
                                 ? 'Chưa có tin tức nào được đăng tải'
                                 : `Chưa có tin tức nào trong danh mục "${selectedCategory}"`}
                         </Typography>
                     </Box>
                 )}
 
-                {/* News Grid */}
+                {/* News List */}
                 {!loading && !error && news.length > 0 && (
-                    <Grid container spacing={3} sx={{ mb: 4 }}>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mb: 4 }}>
                         {news.map((article) => (
-                            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={article.id}>
-                                <Card
-                                    sx={{
-                                        height: '100%',
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        cursor: 'pointer',
-                                        transition: 'transform 0.3s, box-shadow 0.3s',
-                                        '&:hover': {
-                                            transform: 'translateY(-4px)',
-                                            boxShadow: 4,
-                                        },
-                                    }}
-                                    onClick={() => router.push(`/news/${article.id}`)}
-                                >
-                                    <Box sx={{ position: 'relative' }}>
-                                        <CardMedia
-                                            component="img"
-                                            height={200}
-                                            image={getMediaUrl(article.thumbnail)}
-                                            alt={article.title}
-                                            sx={{ objectFit: 'cover' }}
-                                        />
-                                        <Chip
-                                            label={article.category}
-                                            size="small"
-                                            sx={{
-                                                position: 'absolute',
-                                                top: 12,
-                                                right: 12,
-                                                bgcolor: 'var(--primary-color)',
-                                                color: 'white',
-                                                fontWeight: 600,
-                                            }}
-                                        />
+                            <Card
+                                key={article.id}
+                                sx={{
+                                    display: 'flex',
+                                    flexDirection: { xs: 'column', md: 'row' },
+                                    cursor: 'pointer',
+                                    // overflow: 'hidden',
+                                    // transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                                    // '&:hover': {
+                                    //     transform: 'translateY(-4px)',
+                                    //     boxShadow: '0 12px 30px rgba(0,0,0,0.12)',
+                                    //     '& .news-image': {
+                                    //         transform: 'scale(1.05)',
+                                    //     }
+                                    // },
+                                    borderRadius: 4,
+                                    border: '1px solid rgba(0,0,0,0.05)',
+                                    p: 1,
+                                }}
+                                onClick={() => router.push(`/news/${article.id}`)}
+                            >
+                                <Box sx={{ 
+                                    width: { xs: '100%', md: 320 }, 
+                                    height: { xs: 200, md: 'auto' },
+                                    position: 'relative',
+                                    overflow: 'hidden'
+                                }}>
+                                    <CardMedia
+                                        component="img"
+                                        image={getMediaUrl(article.thumbnail)}
+                                        alt={article.title}
+                                        className="news-image"
+                                        sx={{ 
+                                            height: '100%', 
+                                            width: '100%',
+                                            objectFit: 'cover',
+                                            transition: 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+                                        }}
+                                    />
+                                    {/* <Chip
+                                        label={article.category}
+                                        size="small"
+                                        sx={{
+                                            position: 'absolute',
+                                            top: 16,
+                                            left: 16,
+                                            background: 'rgba(255, 255, 255, 0.9)',
+                                            backdropFilter: 'blur(4px)',
+                                            color: 'var(--primary-color)',
+                                            fontWeight: 700,
+                                            boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
+                                        }}
+                                    /> */}
+                                </Box>
+                                <CardContent sx={{ 
+                                    flex: 1, 
+                                    p: { xs: 3, md: 4 },
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    justifyContent: 'center'
+                                }}>
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                                        <CalendarTodayIcon sx={{ fontSize: 16, color: 'var(--primary-color)' }} />
+                                        <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 500 }}>
+                                            {formatDate(article.date)}
+                                        </Typography>
                                     </Box>
-                                    <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-                                        <Typography
-                                            variant="h6"
-                                            sx={{
-                                                fontWeight: 700,
-                                                mb: 1,
-                                                overflow: 'hidden',
-                                                textOverflow: 'ellipsis',
-                                                display: '-webkit-box',
-                                                WebkitLineClamp: 2,
-                                                WebkitBoxOrient: 'vertical',
-                                            }}
-                                        >
-                                            {article.title}
-                                        </Typography>
-                                        <Typography
-                                            variant="body2"
-                                            color="text.secondary"
-                                            sx={{
-                                                mb: 2,
-                                                flexGrow: 1,
-                                                overflow: 'hidden',
-                                                textOverflow: 'ellipsis',
-                                                display: '-webkit-box',
-                                                WebkitLineClamp: 3,
-                                                WebkitBoxOrient: 'vertical',
-                                            }}
-                                        >
-                                            {article.description}
-                                        </Typography>
-                                        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', fontSize: '0.875rem' }}>
-                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                                                <CalendarTodayIcon
-                                                    sx={{ fontSize: 14, color: 'var(--primary-color)' }}
-                                                />
-                                                <Typography variant="caption">{formatDate(article.date)}</Typography>
-                                            </Box>
-                                        </Box>
-                                    </CardContent>
-                                </Card>
-                            </Grid>
+                                    
+                                    <Typography
+                                        variant="h5"
+                                        sx={{
+                                            fontWeight: 800,
+                                            mb: 2,
+                                            color: '#1a1a1a',
+                                            lineHeight: 1.3,
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            display: '-webkit-box',
+                                            WebkitLineClamp: 2,
+                                            WebkitBoxOrient: 'vertical',
+                                        }}
+                                    >
+                                        {article.title}
+                                    </Typography>
+                                    
+                                    <Typography
+                                        variant="body1"
+                                        sx={{
+                                            color: 'text.secondary',
+                                            lineHeight: 1.6,
+                                            mb: 0,
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            display: '-webkit-box',
+                                            WebkitLineClamp: 2,
+                                            WebkitBoxOrient: 'vertical',
+                                        }}
+                                    >
+                                        {article.description}
+                                    </Typography>
+                                </CardContent>
+                            </Card>
                         ))}
-                    </Grid>
+                    </Box>
                 )}
 
                 {/* Pagination */}

@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { api, getMediaUrl } from '@/lib/api';
+import { api, getMediaUrl, API_URL } from '@/lib/api';
+import { toast } from 'react-toastify';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -23,11 +24,13 @@ import ShareIcon from '@mui/icons-material/Share';
 import CloseIcon from '@mui/icons-material/Close';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import DownloadIcon from '@mui/icons-material/Download';
 
-interface NewsImage {
+interface NewsFile {
     id: string;
-    imageUrl: string;
-    order: number;
+    fileUrl: string;
+    fileType: string;
+    fileName: string;
 }
 
 interface NewsArticle {
@@ -39,6 +42,7 @@ interface NewsArticle {
     date: string;
     thumbnail: string | null;
     images: NewsImage[];
+    files: NewsFile[];
 }
 
 interface NewsDetailClientProps {
@@ -53,6 +57,7 @@ export default function NewsDetailClient({ id }: NewsDetailClientProps) {
     const [error, setError] = useState('');
     const [openImageGallery, setOpenImageGallery] = useState(false);
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+    const [downloading, setDownloading] = useState<string | null>(null);
 
     // Fetch news from API
     useEffect(() => {
@@ -110,6 +115,33 @@ export default function NewsDetailClient({ id }: NewsDetailClientProps) {
             });
         } else {
             navigator.clipboard.writeText(window.location.href);
+            toast.success('Đã sao chép liên kết vào bộ nhớ tạm');
+        }
+    };
+
+    const handleDownload = async (file: NewsFile) => {
+        setDownloading(file.id);
+        try {
+            const response = await fetch(`${API_URL}/client/download?url=${encodeURIComponent(file.fileUrl)}`);
+
+            if (!response.ok) {
+                throw new Error('Download failed');
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = file.fileName || `document_${file.id}.${file.fileType}`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Download error:', error);
+            toast.error('Lỗi khi tải file. Vui lòng thử lại.');
+        } finally {
+            setDownloading(null);
         }
     };
 
@@ -254,29 +286,48 @@ export default function NewsDetailClient({ id }: NewsDetailClientProps) {
                     </Grid>
 
                     <Grid size={{ xs: 12, md: 4 }}>
-                        <Card sx={{ position: 'sticky', top: 20 }}>
+                        <Card sx={{ mb: 3 }}>
                             <CardContent>
-                                <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
-                                    Chia sẻ bài viết
+                                <Typography variant="h6" sx={{ mb: 2, fontWeight: 700 }}>
+                                    Tài liệu đính kèm
                                 </Typography>
-                                <Button
-                                    fullWidth
-                                    variant="outlined"
-                                    startIcon={<ShareIcon />}
-                                    onClick={handleShare}
-                                    sx={{
-                                        borderColor: 'var(--primary-color)',
-                                        color: 'var(--primary-color)',
-                                        '&:hover': {
-                                            bgcolor: 'rgba(124, 179, 66, 0.1)',
-                                            borderColor: 'var(--accent-color)',
-                                        },
-                                    }}
-                                >
-                                    Chia sẻ
-                                </Button>
+                                {news.files && news.files.length > 0 ? (
+                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                                        {news.files.map((file) => (
+                                            <Button
+                                                key={file.id}
+                                                fullWidth
+                                                variant="contained"
+                                                startIcon={<DownloadIcon />}
+                                                onClick={() => handleDownload(file)}
+                                                disabled={downloading === file.id}
+                                                sx={{
+                                                    justifyContent: 'flex-start',
+                                                    textTransform: 'none',
+                                                    bgcolor: 'rgba(124, 180, 66, 0.1)',
+                                                    color: 'var(--primary-color)',
+                                                    '&:hover': {
+                                                        bgcolor: 'rgba(124, 180, 66, 0.2)',
+                                                    },
+                                                    fontWeight: 600,
+                                                    boxShadow: 'none',
+                                                    border: '1px solid var(--primary-color)',
+                                                    py: 1.5
+                                                }}
+                                            >
+                                                {downloading === file.id ? 'Đang tải...' : (file.fileName || `Tải xuống ${file.fileType.toUpperCase()}`)}
+                                            </Button>
+                                        ))}
+                                    </Box>
+                                ) : (
+                                    <Typography variant="body2" sx={{ color: 'text.secondary', fontStyle: 'italic' }}>
+                                        Không có tài liệu đính kèm.
+                                    </Typography>
+                                )}
                             </CardContent>
                         </Card>
+
+                        
                     </Grid>
                 </Grid>
             </Container>

@@ -26,6 +26,7 @@ import {
     Close as CloseIcon,
     NavigateBefore as NavigateBeforeIcon,
     NavigateNext as NavigateNextIcon,
+    AttachFile as AttachFileIcon,
 } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
@@ -96,9 +97,11 @@ const TiptapEditor = ({ content, onChange }: { content: string; onChange: (conte
     );
 };
 
-interface NewsImage {
+interface NewsFile {
     id: string;
-    imageUrl: string;
+    fileUrl: string;
+    fileType: string;
+    fileName: string;
     order: number;
 }
 
@@ -111,6 +114,7 @@ interface News {
     date: string;
     thumbnail: string | null;
     images: NewsImage[];
+    files: NewsFile[];
 }
 
 interface NewsUpdateClientProps {
@@ -132,11 +136,13 @@ export default function NewsUpdateClient({ id }: NewsUpdateClientProps) {
     const [existingImages, setExistingImages] = useState<NewsImage[]>([]);
     const [newImages, setNewImages] = useState<File[]>([]);
     const [newImagePreviews, setNewImagePreviews] = useState<string[]>([]);
+    const [existingFiles, setExistingFiles] = useState<NewsFile[]>([]);
+    const [newFiles, setNewFiles] = useState<File[]>([]);
     const [openImageGallery, setOpenImageGallery] = useState(false);
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
     const [allImageUrls, setAllImageUrls] = useState<string[]>([]);
 
-    const categories = ['Tiểu học', 'Trung học'];
+    const categories = ['Tất cả', 'Tiểu học', 'Trung học'];
 
     useEffect(() => {
         const loadNews = async () => {
@@ -154,6 +160,7 @@ export default function NewsUpdateClient({ id }: NewsUpdateClientProps) {
                 const existing = news.images.map(img => ({ ...img, imageUrl: getMediaUrl(img.imageUrl) }));
                 setExistingImages(existing);
                 setAllImageUrls(existing.map(img => img.imageUrl));
+                setExistingFiles(news.files || []);
             } catch (error) {
                 console.error('Error loading news:', error);
                 toast.error('Có lỗi xảy ra khi tải thông tin tin tức');
@@ -213,6 +220,20 @@ export default function NewsUpdateClient({ id }: NewsUpdateClientProps) {
         setAllImageUrls((prev) => prev.filter((url) => url !== removedPreview));
     };
 
+    const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const uploaded = Array.from(event.target.files || []);
+        if (uploaded.length === 0) return;
+        setNewFiles((prev) => [...prev, ...uploaded]);
+    };
+
+    const removeExistingFile = (index: number) => {
+        setExistingFiles((prev) => prev.filter((_, i) => i !== index));
+    };
+
+    const removeNewFile = (index: number) => {
+        setNewFiles((prev) => prev.filter((_, i) => i !== index));
+    };
+
     const handleOpenImageGallery = (index: number) => {
         setSelectedImageIndex(index);
         setOpenImageGallery(true);
@@ -244,9 +265,33 @@ export default function NewsUpdateClient({ id }: NewsUpdateClientProps) {
             submitData.append('category', formData.category);
             submitData.append('date', formData.date);
 
+            // Handle images
+            const cleanedExistingImages = existingImages.map(img => {
+                // Remove the full URL from the imageUrl field to send back to server
+                // The server expects the path relative to uploads/
+                const url = img.imageUrl;
+                const path = url.split('/').slice(-2).join('/'); // e.g. "news/filename.jpg"
+                return { ...img, imageUrl: path, url: path }; 
+            });
+            submitData.append('existingImages', JSON.stringify(cleanedExistingImages));
+
             if (newImages.length > 0) {
                 newImages.forEach((image) => {
                     submitData.append('images[]', image);
+                });
+            }
+
+            // Handle files
+            const cleanedExistingFiles = existingFiles.map(file => {
+                const url = file.fileUrl;
+                const path = url.split('/').slice(-3).join('/'); // e.g. "news/files/filename.pdf"
+                return { ...file, fileUrl: path, url: path };
+            });
+            submitData.append('existingFiles', JSON.stringify(cleanedExistingFiles));
+
+            if (newFiles.length > 0) {
+                newFiles.forEach((file) => {
+                    submitData.append('files[]', file);
                 });
             }
 
@@ -430,6 +475,83 @@ export default function NewsUpdateClient({ id }: NewsUpdateClientProps) {
                             <Button variant="outlined" component="label" startIcon={<CloudUploadIcon />} fullWidth>
                                 Thêm ảnh mới
                                 <input type="file" hidden multiple accept="image/*" onChange={handleImageUpload} />
+                            </Button>
+                        </Paper>
+
+                        <Paper sx={{ p: 3 }}>
+                            <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                                Tệp đính kèm
+                            </Typography>
+
+                            {existingFiles.length > 0 && (
+                                <Box sx={{ mb: 2 }}>
+                                    <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                                        Tệp hiện tại ({existingFiles.length})
+                                    </Typography>
+                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                        {existingFiles.map((file, index) => (
+                                            <Box 
+                                                key={file.id} 
+                                                sx={{ 
+                                                    display: 'flex', 
+                                                    alignItems: 'center', 
+                                                    justifyContent: 'space-between',
+                                                    p: 1,
+                                                    bgcolor: '#f5f5f5',
+                                                    borderRadius: 1
+                                                }}
+                                            >
+                                                <Typography variant="caption" sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '180px' }}>
+                                                    {file.fileName || 'document'}
+                                                </Typography>
+                                                <IconButton size="small" onClick={() => removeExistingFile(index)} color="error">
+                                                    <DeleteIcon fontSize="small" />
+                                                </IconButton>
+                                            </Box>
+                                        ))}
+                                    </Box>
+                                </Box>
+                            )}
+
+                            {newFiles.length > 0 && (
+                                <Box sx={{ mb: 2 }}>
+                                    <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                                        Tệp mới ({newFiles.length})
+                                    </Typography>
+                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                        {newFiles.map((file, index) => (
+                                            <Box 
+                                                key={`new-file-${index}`} 
+                                                sx={{ 
+                                                    display: 'flex', 
+                                                    alignItems: 'center', 
+                                                    justifyContent: 'space-between',
+                                                    p: 1,
+                                                    bgcolor: '#f5f5f5',
+                                                    borderRadius: 1
+                                                }}
+                                            >
+                                                <Typography variant="caption" sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '180px' }}>
+                                                    {file.name}
+                                                </Typography>
+                                                <IconButton size="small" onClick={() => removeNewFile(index)} color="error">
+                                                    <DeleteIcon fontSize="small" />
+                                                </IconButton>
+                                            </Box>
+                                        ))}
+                                    </Box>
+                                </Box>
+                            )}
+
+                            <Button variant="outlined" component="label" startIcon={<AttachFileIcon />} fullWidth>
+                                Thêm tệp mới
+                                <input 
+                                    type="file" 
+                                    hidden 
+                                    multiple 
+                                    accept=".pdf,.doc,.docx,.xls,.xlsx" 
+                                    onChange={handleFileUpload} 
+                                />
                             </Button>
                         </Paper>
                     </Grid>

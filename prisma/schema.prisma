@@ -234,7 +234,8 @@ model News {
   updatedAt   DateTime @updatedAt
 
   // Relations
-  images NewsImage[]
+  images    NewsImage[]
+  files     NewsFile[]
 
   @@index([category])
   @@index([date])
@@ -256,4 +257,22 @@ model NewsImage {
   @@index([newsId])
   @@index([order])
   @@map("news_images")
+}
+
+// NewsFile model - for storing multiple files (pdf, docx) per news article
+model NewsFile {
+  id        String   @id @default(uuid())
+  newsId    String
+  fileUrl   String   @db.Text
+  fileType  String   @default("pdf") // pdf, doc, docx, etc.
+  fileName  String?  // Original file name
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  news News @relation(fields: [newsId], references: [id], onDelete: Cascade)
+
+  @@index([newsId])
+  @@map("news_files")
 }

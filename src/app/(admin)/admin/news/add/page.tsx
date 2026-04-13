@@ -25,6 +25,7 @@ import {
     Close as CloseIcon,
     NavigateBefore as NavigateBeforeIcon,
     NavigateNext as NavigateNextIcon,
+    AttachFile as AttachFileIcon,
 } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
@@ -144,10 +145,11 @@ export default function AddNewsPage() {
     });
     const [images, setImages] = useState<File[]>([]);
     const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+    const [files, setFiles] = useState<File[]>([]);
     const [openImageGallery, setOpenImageGallery] = useState(false);
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
-    const categories = ['Tiểu học', 'Trung học'];
+    const categories = ['Tất cả', 'Tiểu học', 'Trung học'];
 
     const handleInputChange = (field: string, value: string) => {
         setFormData((prev) => ({
@@ -192,6 +194,24 @@ export default function AddNewsPage() {
         setImages((prev) => prev.filter((_, i) => i !== index));
         setImagePreviews((prev) => prev.filter((_, i) => i !== index));
     };
+    
+    const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const selectedFiles = Array.from(event.target.files || []);
+        if (selectedFiles.length === 0) return;
+        
+        // Max 10MB per file
+        const oversizedFiles = selectedFiles.filter((file) => file.size > 10 * 1024 * 1024);
+        if (oversizedFiles.length > 0) {
+            toast.error('Kích thước file không được vượt quá 10MB');
+            return;
+        }
+        
+        setFiles((prev) => [...prev, ...selectedFiles]);
+    };
+
+    const removeFile = (index: number) => {
+        setFiles((prev) => prev.filter((_, i) => i !== index));
+    };
 
     const handleOpenImageGallery = (index: number) => {
         setSelectedImageIndex(index);
@@ -209,15 +229,35 @@ export default function AddNewsPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!formData.title || !formData.description || !formData.content || !formData.category) {
-            toast.error('Vui lòng điền đầy đủ thông tin bắt buộc');
+        if (!formData.title) {
+            toast.error('Vui lòng nhập tiêu đề');
             return;
         }
 
-        if (images.length === 0) {
-            toast.error('Vui lòng tải lên ít nhất một ảnh');
+        if (!formData.description) {
+            toast.error('Vui lòng nhập mô tả');
             return;
         }
+
+        if (!formData.content) {
+            toast.error('Vui lòng nhập nội dung');
+            return;
+        }
+
+        if (!formData.category) {
+            toast.error('Vui lòng chọn danh mục');
+            return;
+        }
+
+        if (!formData.date) {
+            toast.error('Vui lòng chọn ngày');
+            return;
+        }
+
+        // if (images.length === 0) {
+        //     toast.error('Vui lòng tải lên ít nhất một ảnh');
+        //     return;
+        // }
 
         try {
             setLoading(true);
@@ -231,7 +271,12 @@ export default function AddNewsPage() {
 
             // Append images
             images.forEach((image) => {
-                submitData.append('images', image);
+                submitData.append('images[]', image);
+            });
+
+            // Append files
+            files.forEach((file) => {
+                submitData.append('files[]', file);
             });
 
             await api.post('/admin/news', submitData);
@@ -329,7 +374,7 @@ export default function AddNewsPage() {
                         </Paper>
 
                         {/* Image Upload */}
-                        <Paper sx={{ p: 3 }}>
+                        <Paper sx={{ p: 3, mb: 3 }}>
                             <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
                                 Hình ảnh *
                             </Typography>
@@ -375,6 +420,60 @@ export default function AddNewsPage() {
                                                         <DeleteIcon fontSize="small" />
                                                     </IconButton>
                                                 </Card>
+                                            </Box>
+                                        ))}
+                                    </Box>
+                                </Box>
+                            )}
+                        </Paper>
+
+                        {/* File Upload */}
+                        <Paper sx={{ p: 3 }}>
+                            <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                                Tệp đính kèm
+                            </Typography>
+
+                            <Button
+                                variant="outlined"
+                                component="label"
+                                startIcon={<AttachFileIcon />}
+                                fullWidth
+                                sx={{ mb: 2 }}
+                            >
+                                Tải lên tệp (PDF, DOCX...)
+                                <input 
+                                    type="file" 
+                                    hidden 
+                                    multiple 
+                                    accept=".pdf,.doc,.docx,.xls,.xlsx" 
+                                    onChange={handleFileUpload} 
+                                />
+                            </Button>
+
+                            {files.length > 0 && (
+                                <Box>
+                                    <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                                        Tệp đã chọn ({files.length})
+                                    </Typography>
+                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                        {files.map((file, index) => (
+                                            <Box 
+                                                key={index}
+                                                sx={{ 
+                                                    display: 'flex', 
+                                                    alignItems: 'center', 
+                                                    justifyContent: 'space-between',
+                                                    p: 1,
+                                                    bgcolor: '#f5f5f5',
+                                                    borderRadius: 1
+                                                }}
+                                            >
+                                                <Typography variant="caption" sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '180px' }}>
+                                                    {file.name}
+                                                </Typography>
+                                                <IconButton size="small" onClick={() => removeFile(index)} color="error">
+                                                    <DeleteIcon fontSize="small" />
+                                                </IconButton>
                                             </Box>
                                         ))}
                                     </Box>
