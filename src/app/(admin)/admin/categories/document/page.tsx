@@ -34,14 +34,14 @@ import { api } from '@/lib/api';
 interface DocumentCategory {
     id: string;
     name: string;
-    type: 'document_type' | 'document_field';
+    type: 'document_type' | 'document_belongs_to';
     createdAt: string;
     updatedAt: string;
 }
 
 interface CategoryFormData {
     name: string;
-    type: 'document_type' | 'document_field';
+    type: 'document_type' | 'document_belongs_to';
 }
 
 export default function DocumentCategoriesPage() {
@@ -84,7 +84,7 @@ export default function DocumentCategoriesPage() {
 
     // Filter categories by type
     const getFilteredCategories = () => {
-        const type = activeTab === 0 ? 'document_type' : 'document_field';
+        const type = activeTab === 0 ? 'document_type' : 'document_belongs_to';
         return categories.filter((cat) => cat.type === type);
     };
 
@@ -112,7 +112,7 @@ export default function DocumentCategoriesPage() {
 
         setSubmitting(true);
         try {
-            const currentType = activeTab === 0 ? 'document_type' : 'document_field';
+            const currentType = activeTab === 0 ? 'document_type' : 'document_belongs_to';
             const dataToSubmit = {
                 ...formData,
                 type: currentType,
@@ -192,7 +192,7 @@ export default function DocumentCategoriesPage() {
                     <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
                         <Tabs value={activeTab} onChange={handleTabChange}>
                             <Tab label="Loại tài liệu" />
-                            <Tab label="Lĩnh vực" />
+                            <Tab label="Thuộc" />
                         </Tabs>
                     </Box>
 
@@ -204,7 +204,7 @@ export default function DocumentCategoriesPage() {
                             onClick={() => setDialogOpen(true)}
                             sx={{ bgcolor: 'var(--primary-color)' }}
                         >
-                            Thêm {activeTab === 0 ? 'loại tài liệu' : 'lĩnh vực'}
+                            Thêm {activeTab === 0 ? 'loại tài liệu' : 'thuộc'}
                         </Button>
                     </Box>
 
@@ -225,7 +225,7 @@ export default function DocumentCategoriesPage() {
                                         <TableCell>{category.name}</TableCell>
                                         <TableCell>
                                             <Chip
-                                                label={category.type === 'document_type' ? 'Loại tài liệu' : 'Lĩnh vực'}
+                                                label={category.type === 'document_type' ? 'Loại tài liệu' : 'Thuộc'}
                                                 color={category.type === 'document_type' ? 'primary' : 'secondary'}
                                                 size="small"
                                             />
@@ -282,7 +282,7 @@ export default function DocumentCategoriesPage() {
                         />
 
                         <Alert severity="info">
-                            Danh mục này sẽ được thêm vào {activeTab === 0 ? 'loại tài liệu' : 'lĩnh vực'}
+                            Danh mục này sẽ được thêm vào {activeTab === 0 ? 'loại tài liệu' : 'thuộc'}
                         </Alert>
                     </Box>
                 </DialogContent>

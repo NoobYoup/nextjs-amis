@@ -9,7 +9,7 @@ class DocumentController extends Controller {
         $offset = ($page - 1) * $limit;
 
         $type = isset($_GET['type']) ? $_GET['type'] : null;
-        $field = isset($_GET['field']) ? $_GET['field'] : null;
+        $belongsTo = isset($_GET['belongsTo']) ? $_GET['belongsTo'] : null;
         $search = isset($_GET['search']) ? $_GET['search'] : null;
 
         $conditions = [];
@@ -20,9 +20,9 @@ class DocumentController extends Controller {
             $conditions[':type'] = $type;
         }
 
-        if ($field && $field !== 'all') {
-            $sql .= " AND field = :field";
-            $conditions[':field'] = $field;
+        if ($belongsTo && $belongsTo !== 'all') {
+            $sql .= " AND belongsTo = :belongsTo";
+            $conditions[':belongsTo'] = $belongsTo;
         }
         
         if ($search) {
@@ -98,12 +98,12 @@ class DocumentController extends Controller {
         $all = $cStmt->fetchAll(PDO::FETCH_ASSOC);
 
         $types = array_values(array_map(function($item) { return $item['name']; }, array_filter($all, function($item) { return $item['type'] === 'document_type'; })));
-        $fields = array_values(array_map(function($item) { return $item['name']; }, array_filter($all, function($item) { return $item['type'] === 'document_field'; })));
+        $belongsTo = array_values(array_map(function($item) { return $item['name']; }, array_filter($all, function($item) { return $item['type'] === 'document_belongs_to'; })));
 
         $this->json([
             'years' => array_map('intval', $years),
             'types' => $types,
-            'fields' => $fields
+            'belongsTo' => $belongsTo
         ]);
     }
 
@@ -115,11 +115,11 @@ class DocumentController extends Controller {
         $all = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         $types = array_values(array_filter($all, function($item) { return $item['type'] === 'document_type'; }));
-        $fields = array_values(array_filter($all, function($item) { return $item['type'] === 'document_field'; }));
+        $belongsTo = array_values(array_filter($all, function($item) { return $item['type'] === 'document_belongs_to'; }));
 
         $this->json([
             'types' => $types,
-            'fields' => $fields
+            'belongsTo' => $belongsTo
         ]);
     }
 
@@ -129,8 +129,8 @@ class DocumentController extends Controller {
 
         $this->conn->beginTransaction();
         try {
-            $sql = "INSERT INTO documents (id, title, number, type, field, date, summary, isNew, createdAt, updatedAt) 
-                    VALUES (:id, :title, :number, :type, :field, :date, :summary, :isNew, NOW(), NOW())";
+            $sql = "INSERT INTO documents (id, title, number, type, belongsTo, date, summary, isNew, createdAt, updatedAt) 
+                    VALUES (:id, :title, :number, :type, :belongsTo, :date, :summary, :isNew, NOW(), NOW())";
             
             $stmt = $this->conn->prepare($sql);
             $id = bin2hex(random_bytes(16));
@@ -138,7 +138,7 @@ class DocumentController extends Controller {
             $stmt->bindValue(':title', $input['title']);
             $stmt->bindValue(':number', $input['number'] ?? '');
             $stmt->bindValue(':type', $input['type']);
-            $stmt->bindValue(':field', $input['field']);
+            $stmt->bindValue(':belongsTo', $input['belongsTo']);
             $stmt->bindValue(':date', $input['date']);
             $stmt->bindValue(':summary', $input['summary'] ?? '');
             $isNew = 0;
@@ -178,7 +178,7 @@ class DocumentController extends Controller {
         $this->conn->beginTransaction();
         try {
             $sql = "UPDATE documents SET title = :title, number = :number, type = :type, 
-                    field = :field, date = :date, summary = :summary, isNew = :isNew, updatedAt = NOW() 
+                    belongsTo = :belongsTo, date = :date, summary = :summary, isNew = :isNew, updatedAt = NOW() 
                     WHERE id = :id";
             
             $stmt = $this->conn->prepare($sql);
@@ -186,7 +186,7 @@ class DocumentController extends Controller {
             $stmt->bindValue(':title', $input['title']);
             $stmt->bindValue(':number', $input['number'] ?? '');
             $stmt->bindValue(':type', $input['type']);
-            $stmt->bindValue(':field', $input['field']);
+            $stmt->bindValue(':belongsTo', $input['belongsTo']);
             $stmt->bindValue(':date', $input['date']);
             $stmt->bindValue(':summary', $input['summary'] ?? '');
             $stmt->bindValue(':isNew', (int)($input['isNew'] ?? 0));

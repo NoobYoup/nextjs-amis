@@ -57,7 +57,7 @@ interface Document {
     type: string;
     number: string;
     date: string;
-    field: string;
+    belongsTo: string;
     summary: string;
     isNew?: boolean;
     updatedAt: string;
@@ -68,7 +68,7 @@ interface Document {
 interface DocumentCategory {
     id: string;
     name: string;
-    type: 'document_type' | 'document_field';
+    type: 'document_type' | 'document_belongs_to';
 }
 
 export default function DocumentsPage() {
@@ -79,12 +79,12 @@ export default function DocumentsPage() {
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedType, setSelectedType] = useState('');
-    const [selectedField, setSelectedField] = useState('');
+    const [selectedBelongsTo, setSelectedBelongsTo] = useState('');
     const [error, setError] = useState('');
 
     // Categories state
     const [documentTypes, setDocumentTypes] = useState<string[]>([]);
-    const [documentFields, setDocumentFields] = useState<string[]>([]);
+    const [documentBelongsTo, setDocumentBelongsTo] = useState<string[]>([]);
     const [, setCategoriesLoading] = useState(true);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -105,18 +105,18 @@ export default function DocumentsPage() {
                 .sort((a, b) => a.name.localeCompare(b.name))
                 .map((cat) => cat.name);
 
-            const fields = categories
-                .filter((cat) => cat.type === 'document_field')
+            const belongsTo = categories
+                .filter((cat) => cat.type === 'document_belongs_to')
                 .sort((a, b) => a.name.localeCompare(b.name))
                 .map((cat) => cat.name);
 
             setDocumentTypes(types);
-            setDocumentFields(fields);
+            setDocumentBelongsTo(belongsTo);
         } catch (err) {
             console.error('Error loading categories:', err);
             // Fallback to hardcoded values if API fails
             setDocumentTypes(['Thông tư', 'Quyết định', 'Quy chế', 'Kế hoạch', 'Quy định', 'Hướng dẫn']);
-            setDocumentFields(['Quản lý giáo dục', 'Tuyển sinh', 'Đánh giá', 'Kế hoạch', 'Học sinh', 'Chương trình']);
+            setDocumentBelongsTo(['Cấp trên', 'Nhà trường']);
         } finally {
             setCategoriesLoading(false);
         }
@@ -127,7 +127,7 @@ export default function DocumentsPage() {
             const params = new URLSearchParams({
                 search: searchQuery,
                 type: selectedType,
-                field: selectedField,
+                belongsTo: selectedBelongsTo,
                 page: (page + 1).toString(),
             });
             const { data, total } = await api.get<{ data: Document[]; total: number }>(`/admin/documents?${params}`);
@@ -137,7 +137,7 @@ export default function DocumentsPage() {
         } catch (err) {
             setError((err as Error).message || 'Lỗi tải dữ liệu');
         }
-    }, [page, searchQuery, selectedType, selectedField]);
+    }, [page, searchQuery, selectedType, selectedBelongsTo]);
 
     useEffect(() => {
         loadCategories();
@@ -163,8 +163,8 @@ export default function DocumentsPage() {
         setPage(0);
     };
 
-    const handleFieldChange = (e: SelectChangeEvent) => {
-        setSelectedField(e.target.value);
+    const handleBelongsToChange = (e: SelectChangeEvent) => {
+        setSelectedBelongsTo(e.target.value);
         setPage(0);
     };
 
@@ -242,12 +242,12 @@ export default function DocumentsPage() {
                             </Select>
                         </FormControl>
                         <FormControl fullWidth>
-                            <InputLabel>Lĩnh vực</InputLabel>
-                            <Select value={selectedField} onChange={handleFieldChange} label="Lĩnh vực">
+                            <InputLabel>Thuộc</InputLabel>
+                            <Select value={selectedBelongsTo} onChange={handleBelongsToChange} label="Thuộc">
                                 <MenuItem value="">Tất cả</MenuItem>
-                                {documentFields.map((field) => (
-                                    <MenuItem key={field} value={field}>
-                                        {field}
+                                {documentBelongsTo.map((item) => (
+                                    <MenuItem key={item} value={item}>
+                                        {item}
                                     </MenuItem>
                                 ))}
                             </Select>
@@ -270,7 +270,7 @@ export default function DocumentsPage() {
                                 <TableCell sx={{ color: '#fff', fontWeight: 600 }}>Tiêu đề</TableCell>
                                 <TableCell sx={{ color: '#fff', fontWeight: 600 }}>Loại</TableCell>
                                 <TableCell sx={{ color: '#fff', fontWeight: 600 }}>Số</TableCell>
-                                <TableCell sx={{ color: '#fff', fontWeight: 600 }}>Lĩnh vực</TableCell>
+                                <TableCell sx={{ color: '#fff', fontWeight: 600 }}>Thuộc</TableCell>
                                 <TableCell sx={{ color: '#fff', fontWeight: 600 }}>Ngày tạo</TableCell>
                                 <TableCell sx={{ color: '#fff', fontWeight: 600 }}>Ngày cập nhật</TableCell>
                                 <TableCell sx={{ color: '#fff', fontWeight: 600, textAlign: 'center' }}>
@@ -295,7 +295,7 @@ export default function DocumentsPage() {
                                         <TableCell sx={{ fontWeight: 600 }}>Trống</TableCell>
                                     )}
 
-                                    <TableCell>{doc.field}</TableCell>
+                                    <TableCell>{doc.belongsTo}</TableCell>
 
                                     <TableCell>{dayjs(doc.date).format('DD/MM/YYYY')}</TableCell>
                                     <TableCell>{dayjs(doc.updatedAt).format('DD/MM/YYYY')}</TableCell>

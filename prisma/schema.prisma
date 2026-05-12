@@ -68,7 +68,7 @@ model Document {
   type      String   // Thông tư, Quyết định, Quy chế, Kế hoạch, Quy định, Hướng dẫn
   number    String
   date      DateTime
-  field     String   // Quản lý giáo dục, Tuyển sinh, Đánh giá, Kế hoạch, Học sinh, Chương trình
+  belongsTo String   // Cấp trên, Nhà trường
   summary   String?  @db.Text
   isNew     Boolean  @default(false)
   createdAt DateTime @default(now())
@@ -78,7 +78,7 @@ model Document {
   files DocumentFile[]
 
   @@index([type])
-  @@index([field])
+  @@index([belongsTo])
   @@index([date])
   @@map("documents")
 }
@@ -129,7 +129,7 @@ model Tuition {
 model DocumentCategory {
   id        String   @id @default(uuid())
   name      String
-  type      String   // 'document_type' or 'document_field'
+  type      String   // 'document_type' or 'document_belongs_to'
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

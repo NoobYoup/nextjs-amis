@@ -24,7 +24,7 @@ import { api } from '@/lib/api';
 interface DocumentCategory {
     id: string;
     name: string;
-    type: 'document_type' | 'document_field';
+    type: 'document_type' | 'document_belongs_to';
 }
 
 export default function AddDocumentPage() {
@@ -34,7 +34,7 @@ export default function AddDocumentPage() {
         type: '',
         number: '',
         date: '',
-        field: '',
+        belongsTo: '',
         summary: '',
         files: [] as File[],
         fileTypes: [] as string[],
@@ -46,7 +46,7 @@ export default function AddDocumentPage() {
 
     // Categories state
     const [documentTypes, setDocumentTypes] = useState<string[]>([]);
-    const [documentFields, setDocumentFields] = useState<string[]>([]);
+    const [documentBelongsTo, setDocumentBelongsTo] = useState<string[]>([]);
     const [, setCategoriesLoading] = useState(true);
 
     // Load categories from API
@@ -62,18 +62,18 @@ export default function AddDocumentPage() {
                 .sort((a, b) => a.name.localeCompare(b.name))
                 .map((cat) => cat.name);
 
-            const fields = categories
-                .filter((cat) => cat.type === 'document_field')
+            const belongsTo = categories
+                .filter((cat) => cat.type === 'document_belongs_to')
                 .sort((a, b) => a.name.localeCompare(b.name))
                 .map((cat) => cat.name);
 
             setDocumentTypes(types);
-            setDocumentFields(fields);
+            setDocumentBelongsTo(belongsTo);
         } catch (err) {
             console.error('Error loading categories:', err);
             // Fallback to hardcoded values if API fails
             setDocumentTypes(['Thông tư', 'Quyết định', 'Quy chế', 'Kế hoạch', 'Quy định', 'Hướng dẫn']);
-            setDocumentFields(['Quản lý giáo dục', 'Tuyển sinh', 'Đánh giá', 'Kế hoạch', 'Học sinh', 'Chương trình']);
+            setDocumentBelongsTo(['Cấp trên', 'Nhà trường']);
         } finally {
             setCategoriesLoading(false);
         }
@@ -194,7 +194,7 @@ export default function AddDocumentPage() {
             submitData.append('type', formData.type);
             submitData.append('number', formData.number);
             submitData.append('date', formData.date);
-            submitData.append('field', formData.field);
+            submitData.append('belongsTo', formData.belongsTo);
             submitData.append('summary', formData.summary);
             submitData.append('isNew', formData.isNew ? '1' : '0');
 
@@ -315,7 +315,7 @@ export default function AddDocumentPage() {
                             />
                         </Grid>
 
-                        {/* Ngày Ban Hành & Lĩnh Vực */}
+                        {/* Ngày Ban Hành & Thuộc */}
                         <Grid size={{ xs: 12, md: 6 }}>
                             <TextField
                                 fullWidth
@@ -331,14 +331,14 @@ export default function AddDocumentPage() {
                             <TextField
                                 fullWidth
                                 select
-                                label="Lĩnh Vực *"
-                                value={formData.field}
-                                onChange={(e) => handleChange('field', e.target.value)}
+                                label="Thuộc *"
+                                value={formData.belongsTo}
+                                onChange={(e) => handleChange('belongsTo', e.target.value)}
                                 required
                             >
-                                {documentFields.map((field) => (
-                                    <MenuItem key={field} value={field}>
-                                        {field}
+                                {documentBelongsTo.map((item) => (
+                                    <MenuItem key={item} value={item}>
+                                        {item}
                                     </MenuItem>
                                 ))}
                             </TextField>

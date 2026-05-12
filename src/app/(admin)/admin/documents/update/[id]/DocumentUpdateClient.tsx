@@ -29,7 +29,7 @@ import { api, getMediaUrl } from '@/lib/api';
 interface DocumentCategory {
     id: string;
     name: string;
-    type: 'document_type' | 'document_field';
+    type: 'document_type' | 'document_belongs_to';
 }
 
 interface DocumentUpdateClientProps {
@@ -43,7 +43,7 @@ export default function DocumentUpdateClient({ id }: DocumentUpdateClientProps) 
         type: '',
         number: '',
         date: '',
-        field: '',
+        belongsTo: '',
         summary: '',
         fileUrl: '',
         files: [] as File[],
@@ -56,7 +56,7 @@ export default function DocumentUpdateClient({ id }: DocumentUpdateClientProps) 
     const [loading, setLoading] = useState(true);
     const [filePreviews, setFilePreviews] = useState<string[]>([]);
     const [documentTypes, setDocumentTypes] = useState<string[]>([]);
-    const [documentFields, setDocumentFields] = useState<string[]>([]);
+    const [documentBelongsTo, setDocumentBelongsTo] = useState<string[]>([]);
     const [previewFileTypes, setPreviewFileTypes] = useState<string[]>([]);
 
     const loadCategories = useCallback(async () => {
@@ -69,17 +69,17 @@ export default function DocumentUpdateClient({ id }: DocumentUpdateClientProps) 
                 .sort((a, b) => a.name.localeCompare(b.name))
                 .map((cat) => cat.name);
 
-            const fields = categories
-                .filter((cat) => cat.type === 'document_field')
+            const belongsTo = categories
+                .filter((cat) => cat.type === 'document_belongs_to')
                 .sort((a, b) => a.name.localeCompare(b.name))
                 .map((cat) => cat.name);
 
             setDocumentTypes(types);
-            setDocumentFields(fields);
+            setDocumentBelongsTo(belongsTo);
         } catch (err) {
             console.error('Error loading categories:', err);
             setDocumentTypes(['Thông tư', 'Quyết định', 'Quy chế', 'Kế hoạch', 'Quy định', 'Hướng dẫn']);
-            setDocumentFields(['Quản lý giáo dục', 'Tuyển sinh', 'Đánh giá', 'Kế hoạch', 'Học sinh', 'Chương trình']);
+            setDocumentBelongsTo(['Cấp trên', 'Nhà trường']);
         }
     }, []);
 
@@ -104,7 +104,7 @@ export default function DocumentUpdateClient({ id }: DocumentUpdateClientProps) 
                     type: data.type,
                     number: data.number,
                     date: data.date ? data.date.substring(0, 10) : '',
-                    field: data.field,
+                    belongsTo: data.belongsTo,
                     summary: data.summary || '',
                     fileUrl: fileUrls[0] || '',
                     files: [],
@@ -219,7 +219,7 @@ export default function DocumentUpdateClient({ id }: DocumentUpdateClientProps) 
 
     const handleSave = async () => {
         setError('');
-        if (!formData.title || !formData.type || !formData.number || !formData.date || !formData.field) {
+        if (!formData.title || !formData.type || !formData.date || !formData.belongsTo) {
             setError('Vui lòng điền đầy đủ các trường bắt buộc');
             return;
         }
@@ -230,7 +230,7 @@ export default function DocumentUpdateClient({ id }: DocumentUpdateClientProps) 
             submitData.append('type', formData.type);
             submitData.append('number', formData.number);
             submitData.append('date', formData.date);
-            submitData.append('field', formData.field);
+            submitData.append('belongsTo', formData.belongsTo);
             submitData.append('summary', formData.summary);
             submitData.append('isNew', formData.isNew ? '1' : '0');
             submitData.append('existingFiles', JSON.stringify(formData.existingFiles || []));
@@ -349,14 +349,14 @@ export default function DocumentUpdateClient({ id }: DocumentUpdateClientProps) 
                             <TextField
                                 fullWidth
                                 select
-                                label="Lĩnh Vực *"
-                                value={formData.field}
-                                onChange={(e) => handleChange('field', e.target.value)}
+                                label="Thuộc *"
+                                value={formData.belongsTo}
+                                onChange={(e) => handleChange('belongsTo', e.target.value)}
                                 required
                             >
-                                {documentFields.map((field) => (
-                                    <MenuItem key={field} value={field}>
-                                        {field}
+                                {documentBelongsTo.map((item) => (
+                                    <MenuItem key={item} value={item}>
+                                        {item}
                                     </MenuItem>
                                 ))}
                             </TextField>

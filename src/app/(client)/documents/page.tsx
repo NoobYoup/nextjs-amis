@@ -27,7 +27,7 @@ import Tab from '@mui/material/Tab';
 interface DocumentCategory {
     id: string;
     name: string;
-    type: 'document_type' | 'document_field';
+    type: 'document_type' | 'document_belongs_to';
 }
 
 interface DocumentFile {
@@ -43,7 +43,7 @@ interface Document {
     type: string;
     number: string;
     date: string;
-    field: string;
+    belongsTo: string;
     summary: string | null;
     isNew: boolean;
     createdAt: string;
@@ -114,8 +114,8 @@ export default function DocumentsPage() {
             try {
                 const data = await api.get<DocumentCategory[]>('/client/categories/document');
                 const catArray = Array.isArray(data) ? data : (data as any)?.data || [];
-                // We assume Filter Tabs use the 'document_field' type to match "Cấp trên, Nhà trường"
-                setCategories(catArray.filter((c: DocumentCategory) => c.type === 'document_field'));
+                // We assume Filter Tabs use the 'document_belongs_to' type to match "Cấp trên, Nhà trường"
+                setCategories(catArray.filter((c: DocumentCategory) => c.type === 'document_belongs_to'));
             } catch (err) {
                 console.error('Error loading categories:', err);
             }
@@ -131,7 +131,7 @@ export default function DocumentsPage() {
                 const params = new URLSearchParams();
 
                 if (selectedCategory !== 'all') {
-                    params.append('field', selectedCategory);
+                    params.append('belongsTo', selectedCategory);
                 }
 
                 const responseData = await api.get<Document[] | { data: Document[] }>(`/client/documents?${params.toString()}`);
