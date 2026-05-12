@@ -3,18 +3,36 @@ require_once 'Controller.php';
 
 class ReformController extends Controller {
 
+    public function categories() {
+        $stmt = $this->conn->prepare("SELECT * FROM reform_categories ORDER BY name ASC");
+        $stmt->execute();
+        $this->json($stmt->fetchAll(PDO::FETCH_ASSOC));
+    }
+
     public function index() {
-        // Pagination
+        $category = isset($_GET['category']) ? $_GET['category'] : null;
         $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
         $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
         $offset = ($page - 1) * $limit;
 
-        // Total
-        $countSql = "SELECT COUNT(*) FROM reforms";
-        $total = $this->conn->query($countSql)->fetchColumn();
+        $where = " WHERE 1=1";
+        $params = [];
 
-        $sql = "SELECT * FROM reforms ORDER BY createdAt DESC LIMIT :limit OFFSET :offset";
+        if ($category) {
+            $where .= " AND category = :category";
+            $params[':category'] = $category;
+        }
+
+        // Total
+        $countSql = "SELECT COUNT(*) FROM reforms" . $where;
+        $cStmt = $this->conn->prepare($countSql);
+        foreach ($params as $k => $v) $cStmt->bindValue($k, $v);
+        $cStmt->execute();
+        $total = $cStmt->fetchColumn();
+
+        $sql = "SELECT * FROM reforms" . $where . " ORDER BY createdAt DESC LIMIT :limit OFFSET :offset";
         $stmt = $this->conn->prepare($sql);
+        foreach ($params as $k => $v) $stmt->bindValue($k, $v);
         $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
         $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
@@ -61,15 +79,16 @@ class ReformController extends Controller {
 
         $this->conn->beginTransaction();
         try {
-            $sql = "INSERT INTO reforms (id, title, description, details, createdAt, updatedAt) 
-                    VALUES (:id, :title, :description, :details, NOW(), NOW())";
+            $sql = "INSERT INTO reforms (id, title, category, description, details, createdAt, updatedAt) 
+                    VALUES (:id, :title, :category, :description, :details, NOW(), NOW())";
             
             $stmt = $this->conn->prepare($sql);
             $id = bin2hex(random_bytes(16));
             $stmt->bindValue(':id', $id);
             $stmt->bindValue(':title', $input['title']);
+            $stmt->bindValue(':category', $input['category'] ?? '');
             $stmt->bindValue(':description', $input['description'] ?? '');
-            $stmt->bindValue(':details', $input['details'] ?? '[]'); // Details usually JSON string
+            $stmt->bindValue(':details', $input['details'] ?? '[]');
             $stmt->execute();
 
             // Handle Files (Frontend uses 'file')
@@ -100,12 +119,13 @@ class ReformController extends Controller {
 
         $this->conn->beginTransaction();
         try {
-            $sql = "UPDATE reforms SET title = :title, description = :description, details = :details, updatedAt = NOW() 
+            $sql = "UPDATE reforms SET title = :title, category = :category, description = :description, details = :details, updatedAt = NOW() 
                     WHERE id = :id";
             
             $stmt = $this->conn->prepare($sql);
             $stmt->bindValue(':id', $id);
             $stmt->bindValue(':title', $input['title']);
+            $stmt->bindValue(':category', $input['category'] ?? '');
             $stmt->bindValue(':description', $input['description'] ?? '');
             $stmt->bindValue(':details', $input['details'] ?? '[]');
             $stmt->execute();

@@ -51,15 +51,21 @@ const menuItems: SidebarMenuItem[] = [
     },
     {
         id: 'reforms',
-        label: 'Cải cách hành chính',
+        label: 'Công khai',
         icon: SchoolIcon,
-        subItems: [{ id: 'reforms-list', label: 'Danh sách thông tin công khai', href: '/admin/reforms' }],
+        subItems: [
+            { id: 'reforms-list', label: 'Danh sách công khai', href: '/admin/reforms' },
+            { id: 'reforms-category', label: 'Danh mục công khai', href: '/admin/categories/reform' },
+        ],
     },
     {
         id: 'procedures',
         label: 'Thủ tục',
         icon: ReceiptIcon,
-        subItems: [{ id: 'procedures-list', label: 'Danh sách thủ tục', href: '/admin/procedures' }],
+        subItems: [
+            { id: 'procedures-list', label: 'Danh sách thủ tục', href: '/admin/procedures' },
+            { id: 'procedures-category', label: 'Danh mục thủ tục', href: '/admin/categories/procedure' },
+        ],
     },
     {
         id: 'documents',

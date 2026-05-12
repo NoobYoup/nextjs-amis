@@ -18,7 +18,8 @@ import {
     Dialog,
     DialogContent,
     CardMedia,
-    CircularProgress
+    CircularProgress,
+    MenuItem
 } from '@mui/material';
 import {
     CloudUpload as CloudUploadIcon,
@@ -85,6 +86,19 @@ export default function ProcedureUpdateClient({ id }: ProcedureUpdateClientProps
     const [error, setError] = useState('');
     const [openImageGallery, setOpenImageGallery] = useState(false);
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+    const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const data = await api.get<{ id: string; name: string }[]>('/admin/categories/procedure');
+                setCategories(data);
+            } catch (err) {
+                console.error('Lỗi tải danh mục:', err);
+            }
+        };
+        fetchCategories();
+    }, []);
 
     useEffect(() => {
         const fetchProcedure = async () => {
@@ -344,11 +358,18 @@ export default function ProcedureUpdateClient({ id }: ProcedureUpdateClientProps
                         </Grid>
                         <Grid size={{ xs: 12, md: 6 }}>
                             <TextField
+                                select
                                 fullWidth
                                 label="Danh mục *"
                                 value={formData.category}
                                 onChange={(e) => handleChange('category', e.target.value)}
-                            />
+                            >
+                                {categories.map((cat) => (
+                                    <MenuItem key={cat.id} value={cat.name}>
+                                        {cat.name}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
                         </Grid>
                         <Grid size={{ xs: 12 }}>
                             <TextField

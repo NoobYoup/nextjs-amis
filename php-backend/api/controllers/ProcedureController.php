@@ -3,8 +3,15 @@ require_once 'Controller.php';
 
 class ProcedureController extends Controller {
 
+    public function categories() {
+        $stmt = $this->conn->prepare("SELECT * FROM procedure_categories ORDER BY name ASC");
+        $stmt->execute();
+        $this->json($stmt->fetchAll(PDO::FETCH_ASSOC));
+    }
+
     public function index() {
         $category = isset($_GET['category']) ? $_GET['category'] : null;
+
         $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
         $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
         $offset = ($page - 1) * $limit;

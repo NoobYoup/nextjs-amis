@@ -18,6 +18,7 @@ import {
     Dialog,
     DialogContent,
     CardMedia,
+    MenuItem,
 } from '@mui/material';
 import {
     CloudUpload as CloudUploadIcon,
@@ -53,6 +54,22 @@ export default function AddProcedurePage() {
     const [error, setError] = useState('');
     const [openImageGallery, setOpenImageGallery] = useState(false);
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+    const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
+
+    React.useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const data = await api.get<{ id: string; name: string }[]>('/admin/categories/procedure');
+                setCategories(data);
+                if (data.length > 0) {
+                    setFormData(prev => ({ ...prev, category: data[0].name }));
+                }
+            } catch (err) {
+                console.error('Lỗi tải danh mục:', err);
+            }
+        };
+        fetchCategories();
+    }, []);
 
     const handleChange = (field: keyof typeof formData, value: string) => {
         setFormData((prev) => ({ ...prev, [field]: value }));
@@ -315,13 +332,19 @@ export default function AddProcedurePage() {
 
                         <Grid size={{ xs: 12, md: 6 }}>
                             <TextField
+                                select
                                 fullWidth
                                 label="Danh mục *"
                                 value={formData.category}
                                 onChange={(e) => handleChange('category', e.target.value)}
-                                placeholder="Ví dụ: Học sinh, Tuyển sinh, Học tập..."
                                 helperText="Phân loại quy chế"
-                            />
+                            >
+                                {categories.map((cat) => (
+                                    <MenuItem key={cat.id} value={cat.name}>
+                                        {cat.name}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
                         </Grid>
 
                         <Grid size={{ xs: 12 }}>

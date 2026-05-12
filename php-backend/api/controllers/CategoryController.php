@@ -86,5 +86,89 @@ class CategoryController extends Controller {
         $stmt->execute([':id' => $id]);
         $this->json(['message' => 'Category deleted']);
     }
+
+    // PROCEDURE CATEGORIES
+    public function listProcedure() {
+        $stmt = $this->conn->prepare("SELECT * FROM procedure_categories ORDER BY name ASC");
+        $stmt->execute();
+        $this->json($stmt->fetchAll(PDO::FETCH_ASSOC));
+    }
+
+    public function showProcedure($id) {
+        $stmt = $this->conn->prepare("SELECT * FROM procedure_categories WHERE id = :id LIMIT 1");
+        $stmt->execute([':id' => $id]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($row) {
+            $this->json($row);
+        } else {
+            $this->json(['message' => 'Not Found'], 404);
+        }
+    }
+
+    public function storeProcedure() {
+        $this->requireAuth();
+        $input = $this->getInput();
+        $stmt = $this->conn->prepare("INSERT INTO procedure_categories (id, name, createdAt, updatedAt) VALUES (:id, :name, NOW(), NOW())");
+        $id = bin2hex(random_bytes(16));
+        $stmt->execute([':id' => $id, ':name' => $input['name']]);
+        $this->json(['message' => 'Category created', 'id' => $id]);
+    }
+
+    public function updateProcedure($id) {
+        $this->requireAuth();
+        $input = $this->getInput();
+        $stmt = $this->conn->prepare("UPDATE procedure_categories SET name = :name, updatedAt = NOW() WHERE id = :id");
+        $stmt->execute([':id' => $id, ':name' => $input['name']]);
+        $this->json(['message' => 'Category updated']);
+    }
+
+    public function deleteProcedure($id) {
+        $this->requireAuth();
+        $stmt = $this->conn->prepare("DELETE FROM procedure_categories WHERE id = :id");
+        $stmt->execute([':id' => $id]);
+        $this->json(['message' => 'Category deleted']);
+    }
+
+    // REFORM CATEGORIES
+    public function listReform() {
+        $stmt = $this->conn->prepare("SELECT * FROM reform_categories ORDER BY name ASC");
+        $stmt->execute();
+        $this->json($stmt->fetchAll(PDO::FETCH_ASSOC));
+    }
+
+    public function showReform($id) {
+        $stmt = $this->conn->prepare("SELECT * FROM reform_categories WHERE id = :id LIMIT 1");
+        $stmt->execute([':id' => $id]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($row) {
+            $this->json($row);
+        } else {
+            $this->json(['message' => 'Not Found'], 404);
+        }
+    }
+
+    public function storeReform() {
+        $this->requireAuth();
+        $input = $this->getInput();
+        $stmt = $this->conn->prepare("INSERT INTO reform_categories (id, name, createdAt, updatedAt) VALUES (:id, :name, NOW(), NOW())");
+        $id = bin2hex(random_bytes(16));
+        $stmt->execute([':id' => $id, ':name' => $input['name']]);
+        $this->json(['message' => 'Category created', 'id' => $id]);
+    }
+
+    public function updateReform($id) {
+        $this->requireAuth();
+        $input = $this->getInput();
+        $stmt = $this->conn->prepare("UPDATE reform_categories SET name = :name, updatedAt = NOW() WHERE id = :id");
+        $stmt->execute([':id' => $id, ':name' => $input['name']]);
+        $this->json(['message' => 'Category updated']);
+    }
+
+    public function deleteReform($id) {
+        $this->requireAuth();
+        $stmt = $this->conn->prepare("DELETE FROM reform_categories WHERE id = :id");
+        $stmt->execute([':id' => $id]);
+        $this->json(['message' => 'Category deleted']);
+    }
 }
 ?>

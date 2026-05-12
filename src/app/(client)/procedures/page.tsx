@@ -64,6 +64,20 @@ export default function ProceduresPage() {
     const [openImageGallery, setOpenImageGallery] = useState(false);
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
     const [currentProcedureImages, setCurrentProcedureImages] = useState<ProcedureFile[]>([]);
+    const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
+
+    // Fetch categories
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const data = await api.get<{ id: string; name: string }[]>('/client/categories/procedure');
+                setCategories(data);
+            } catch (err) {
+                console.error('Error fetching categories:', err);
+            }
+        };
+        fetchCategories();
+    }, []);
 
     // Fetch procedures from API
     useEffect(() => {
@@ -90,24 +104,9 @@ export default function ProceduresPage() {
         fetchProcedures();
     }, [selectedCategory]);
 
-    // Get unique categories from procedures
-    const categories = ['all', ...Array.from(new Set(procedures.map((p) => p.category)))];
-
     // Filter procedures by category
     const filteredProcedures =
         selectedCategory === 'all' ? procedures : procedures.filter((p) => p.category === selectedCategory);
-
-    // Icon mapping for categories
-    const getCategoryIcon = (category: string) => {
-        const iconMap: { [key: string]: React.ReactNode } = {
-            'Học sinh': <SchoolIcon />,
-            'Tuyển sinh': <PersonIcon />,
-            'Học tập': <GavelIcon />,
-            'An toàn': <SecurityIcon />,
-            'Khen thưởng': <EmojiEventsIcon />,
-        };
-        return iconMap[category] || <SchoolIcon />;
-    };
 
     // Image gallery functions
     const handleOpenImageGallery = (procedure: Procedure, imageIndex: number = 0) => {
@@ -218,67 +217,28 @@ export default function ProceduresPage() {
                         }}
                     >
                         <Tab label="Tất cả" value="all" />
-                        {categories.slice(1).map((category) => (
-                            <Tab key={category} label={category} value={category} />
+                        {categories.map((category) => (
+                            <Tab key={category.id} label={category.name} value={category.name} />
                         ))}
                     </Tabs>
                 </Box>
 
-                {/* Procedures Grid */}
-                <Grid container spacing={3}>
+                {/* Procedures List */}
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                     {filteredProcedures.length === 0 ? (
-                        <Grid size={{ xs: 12 }}>
-                            <Box sx={{ textAlign: 'center', py: 8 }}>
-                                <Typography variant="h6" sx={{ color: '#666', mb: 2 }}>
-                                    {procedures.length === 0
-                                        ? 'Chưa có quy chế nào được công bố'
-                                        : 'Không tìm thấy quy chế nào trong danh mục này'}
-                                </Typography>
-                            </Box>
-                        </Grid>
+                        <Box sx={{ textAlign: 'center', py: 8 }}>
+                            <Typography variant="h6" sx={{ color: '#666', mb: 2 }}>
+                                {procedures.length === 0
+                                    ? 'Chưa có thủ tục nào được công bố'
+                                    : 'Không tìm thấy thủ tục nào trong danh mục này'}
+                            </Typography>
+                        </Box>
                     ) : (
                         filteredProcedures.map((procedure) => (
-                            <Grid size={{ xs: 12, md: 6, lg: 4 }} key={procedure.id}>
-                                <Card
-                                    sx={{
-                                        height: '100%',
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        transition: 'all 0.3s ease',
-                                        '&:hover': {
-                                            boxShadow: 4,
-                                            transform: 'translateY(-4px)',
-                                        },
-                                    }}
-                                >
-                                    {/* Card Header */}
-                                    <Box
-                                        sx={{
-                                            p: 3,
-                                            background:
-                                                'linear-gradient(135deg, rgba(124, 179, 66, 0.1) 0%, rgba(124, 179, 66, 0.05) 100%)',
-                                            borderBottom: '2px solid var(--primary-color)',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: 2,
-                                        }}
-                                    >
-                                        <Box
-                                            sx={{
-                                                display: 'flex',
-                                                p: 1.5,
-                                                borderRadius: '50%',
-                                                bgcolor: 'var(--primary-color)',
-                                                color: 'white',
-                                                fontSize: 28,
-                                            }}
-                                        >
-                                            {getCategoryIcon(procedure.category)}
-                                        </Box>
-                                        <Box>
-                                            <Typography variant="h6" sx={{ fontWeight: 700, mb: 0.5 }}>
-                                                {procedure.title}
-                                            </Typography>
+                            <Card key={procedure.id} sx={{ p: 3, '&:hover': { boxShadow: 4 } }}>
+                                <Grid container spacing={2} alignItems="center">
+                                    <Grid size={{ xs: 12, md: 8 }}>
+                                        <Box sx={{ display: 'flex', gap: 1, mb: 1, flexWrap: 'wrap' }}>
                                             <Chip
                                                 label={procedure.category}
                                                 size="small"
@@ -289,133 +249,49 @@ export default function ProceduresPage() {
                                                 }}
                                             />
                                         </Box>
-                                    </Box>
-
-                                    {/* Card Content */}
-                                    <Box sx={{ p: 3, flex: 1, overflow: 'auto' }}>
-                                        <Typography variant="body2" sx={{ color: '#666', mb: 2 }}>
+                                        <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>
+                                            {procedure.title}
+                                        </Typography>
+                                        <Typography variant="body2" sx={{ color: '#666', mb: 1 }}>
                                             {procedure.description}
                                         </Typography>
-
-                                        {/* Content Sections */}
-                                        {procedure.content.slice(0, 2).map((section, idx) => (
-                                            <Box key={idx} sx={{ mb: 2 }}>
-                                                <Typography
-                                                    variant="subtitle2"
-                                                    sx={{
-                                                        fontWeight: 700,
-                                                        color: 'var(--primary-color)',
-                                                        mb: 1,
-                                                    }}
-                                                >
-                                                    {section.title}
-                                                </Typography>
-                                                <List sx={{ py: 0 }}>
-                                                    {section.items.slice(0, 2).map((item, itemIdx) => (
-                                                        <ListItem
-                                                            key={itemIdx}
-                                                            sx={{
-                                                                py: 0.5,
-                                                                px: 0,
-                                                                display: 'flex',
-                                                                alignItems: 'flex-start',
-                                                            }}
-                                                        >
-                                                            <ListItemIcon
-                                                                sx={{
-                                                                    minWidth: 24,
-                                                                    color: 'var(--primary-color)',
-                                                                }}
-                                                            >
-                                                                <CheckCircleIcon sx={{ fontSize: 16 }} />
-                                                            </ListItemIcon>
-                                                            <ListItemText
-                                                                primary={item}
-                                                                primaryTypographyProps={{
-                                                                    variant: 'body2',
-                                                                    sx: { color: '#555' },
-                                                                }}
-                                                            />
-                                                        </ListItem>
-                                                    ))}
-                                                    {section.items.length > 2 && (
-                                                        <Typography
-                                                            variant="caption"
-                                                            sx={{
-                                                                color: 'var(--primary-color)',
-                                                                fontWeight: 600,
-                                                                display: 'block',
-                                                                mt: 0.5,
-                                                            }}
-                                                        >
-                                                            +{section.items.length - 2} mục khác
-                                                        </Typography>
-                                                    )}
-                                                </List>
-                                                {idx < procedure.content.slice(0, 2).length - 1 && (
-                                                    <Divider sx={{ my: 1.5 }} />
+                                    </Grid>
+                                    <Grid size={{ xs: 12, md: 4 }} sx={{ textAlign: { xs: 'left', md: 'right' } }}>
+                                        {procedure.files && procedure.files.length > 0 && (
+                                            <>
+                                                {procedure.files.some((f) => f.fileType === 'image') ? (
+                                                    <Button
+                                                        variant="contained"
+                                                        startIcon={<VisibilityIcon />}
+                                                        onClick={() => handleOpenImageGallery(procedure, 0)}
+                                                        sx={{
+                                                            bgcolor: 'var(--primary-color)',
+                                                            '&:hover': { bgcolor: 'var(--accent-color)' },
+                                                        }}
+                                                    >
+                                                        Xem ảnh
+                                                    </Button>
+                                                ) : (
+                                                    <Button
+                                                        variant="contained"
+                                                        startIcon={<DownloadIcon />}
+                                                        onClick={() => handleDownload(procedure.files[0])}
+                                                        sx={{
+                                                            bgcolor: 'var(--primary-color)',
+                                                            '&:hover': { bgcolor: 'var(--accent-color)' },
+                                                        }}
+                                                    >
+                                                        Tải xuống {procedure.files[0].fileType.toUpperCase()}
+                                                    </Button>
                                                 )}
-                                            </Box>
-                                        ))}
-
-                                        {procedure.content.length > 2 && (
-                                            <Typography
-                                                variant="caption"
-                                                sx={{
-                                                    color: 'var(--primary-color)',
-                                                    fontWeight: 600,
-                                                    display: 'block',
-                                                    mt: 1,
-                                                }}
-                                            >
-                                                +{procedure.content.length - 2} mục khác
-                                            </Typography>
+                                            </>
                                         )}
-                                    </Box>
-
-                                    {/* Card Footer - File Actions */}
-                                    {procedure.files.length > 0 && (
-                                        <Box
-                                            sx={{
-                                                p: 2,
-                                                borderTop: '1px solid #e0e0e0',
-                                                bgcolor: '#f9f9f9',
-                                            }}
-                                        >
-                                            {procedure.files.some((f) => f.fileType === 'image') ? (
-                                                <Button
-                                                    fullWidth
-                                                    variant="contained"
-                                                    startIcon={<VisibilityIcon />}
-                                                    onClick={() => handleOpenImageGallery(procedure, 0)}
-                                                    sx={{
-                                                        bgcolor: 'var(--primary-color)',
-                                                        '&:hover': { bgcolor: 'var(--accent-color)' },
-                                                    }}
-                                                >
-                                                    Xem ảnh
-                                                </Button>
-                                            ) : (
-                                                <Button
-                                                    fullWidth
-                                                    variant="contained"
-                                                    startIcon={<DownloadIcon />}
-                                                    onClick={() => handleDownload(procedure.files[0])}
-                                                    sx={{
-                                                        bgcolor: 'var(--primary-color)',
-                                                        '&:hover': { bgcolor: 'var(--accent-color)' },
-                                                    }}
-                                                >
-                                                    Tải xuống {procedure.files[0].fileType.toUpperCase()}
-                                                </Button>
-                                            )}
-                                        </Box>
-                                    )}
-                                </Card>
-                            </Grid>
+                                    </Grid>
+                                </Grid>
+                            </Card>
                         ))
                     )}
-                </Grid>
+                </Box>
             </Container>
 
             {/* Image Gallery Modal */}

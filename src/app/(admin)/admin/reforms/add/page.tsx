@@ -18,6 +18,7 @@ import {
     Dialog,
     DialogContent,
     CardMedia,
+    MenuItem,
 } from '@mui/material';
 import {
     CloudUpload as CloudUploadIcon,
@@ -35,6 +36,7 @@ export default function AddReformPage() {
     const router = useRouter();
     const [formData, setFormData] = useState({
         title: '',
+        category: '',
         description: '',
         details: [''],
         files: [] as File[],
@@ -45,6 +47,22 @@ export default function AddReformPage() {
     const [submitLoading, setSubmitLoading] = useState(false);
     const [openImageGallery, setOpenImageGallery] = useState(false);
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+    const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
+
+    React.useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const data = await api.get<{ id: string; name: string }[]>('/admin/categories/reform');
+                setCategories(data);
+                if (data.length > 0) {
+                    setFormData(prev => ({ ...prev, category: data[0].name }));
+                }
+            } catch (err) {
+                console.error('Lỗi tải danh mục:', err);
+            }
+        };
+        fetchCategories();
+    }, []);
 
     const handleChange = (field: keyof typeof formData, value: string | string[]) => {
         setFormData((prev) => ({ ...prev, [field]: value }));
@@ -184,8 +202,8 @@ export default function AddReformPage() {
         setSubmitLoading(true);
 
         // Validation
-        if (!formData.title.trim() || !formData.description.trim()) {
-            toast.error('Vui lòng điền đầy đủ tiêu đề và mô tả');
+        if (!formData.title.trim() || !formData.category.trim() || !formData.description.trim()) {
+            toast.error('Vui lòng điền đầy đủ tiêu đề, danh mục và mô tả');
             setSubmitLoading(false);
             return;
         }
@@ -207,6 +225,7 @@ export default function AddReformPage() {
             // Send all files in one request
             const submitData = new FormData();
             submitData.append('title', formData.title.trim());
+            submitData.append('category', formData.category.trim());
             submitData.append('description', formData.description.trim());
             submitData.append('details', JSON.stringify(validDetails));
 
@@ -287,17 +306,32 @@ export default function AddReformPage() {
                 <Card sx={{ p: 4 }}>
                     <Grid container spacing={3}>
                         {/* Tiêu Đề */}
-                        <Grid size={{ xs: 12 }}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <TextField
                                 fullWidth
                                 label="Tiêu Đề *"
                                 value={formData.title}
                                 onChange={(e) => handleChange('title', e.target.value)}
-                                multiline
-                                rows={2}
                                 placeholder="Nhập tiêu đề mục công khai..."
                                 helperText="Tiêu đề đầy đủ của mục công khai thông tin"
                             />
+                        </Grid>
+
+                        <Grid size={{ xs: 12, md: 6 }}>
+                            <TextField
+                                select
+                                fullWidth
+                                label="Danh mục *"
+                                value={formData.category}
+                                onChange={(e) => handleChange('category', e.target.value)}
+                                helperText="Phân loại thông tin"
+                            >
+                                {categories.map((cat) => (
+                                    <MenuItem key={cat.id} value={cat.name}>
+                                        {cat.name}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
                         </Grid>
 
                         {/* Mô Tả */}

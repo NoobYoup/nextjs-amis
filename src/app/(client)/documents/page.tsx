@@ -21,6 +21,14 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import IconButton from '@mui/material/IconButton';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+
+interface DocumentCategory {
+    id: string;
+    name: string;
+    type: 'document_type' | 'document_field';
+}
 
 interface DocumentFile {
     id: string;
@@ -44,15 +52,10 @@ interface Document {
 }
 
 export default function DocumentsPage() {
-    const [searchTerm, setSearchTerm] = useState('');
-    const [selectedYear, setSelectedYear] = useState('all');
-    const [selectedType, setSelectedType] = useState('all');
-    const [selectedField, setSelectedField] = useState('all');
+    const [selectedCategory, setSelectedCategory] = useState('all');
     const [documents, setDocuments] = useState<Document[]>([]);
     const [loading, setLoading] = useState(true);
-    const [years, setYears] = useState<number[]>([]);
-    const [types, setTypes] = useState<string[]>([]);
-    const [fields, setFields] = useState<string[]>([]);
+    const [categories, setCategories] = useState<DocumentCategory[]>([]);
     const [downloading, setDownloading] = useState<string | null>(null);
     const [openImageGallery, setOpenImageGallery] = useState(false);
     const [selectedImageUrls, setSelectedImageUrls] = useState<string[]>([]);
@@ -105,19 +108,19 @@ export default function DocumentsPage() {
         setSelectedImageIndex((prev) => (prev === selectedImageUrls.length - 1 ? 0 : prev + 1));
     };
 
-    // Load filters
+    // Load categories
     useEffect(() => {
-        const loadFilters = async () => {
+        const loadCategories = async () => {
             try {
-                const data = await api.get<{ years: number[]; types: string[]; fields: string[] }>('/client/documents/filters');
-                setYears(data.years);
-                setTypes(data.types);
-                setFields(data.fields);
+                const data = await api.get<DocumentCategory[]>('/client/categories/document');
+                const catArray = Array.isArray(data) ? data : (data as any)?.data || [];
+                // We assume Filter Tabs use the 'document_field' type to match "Cấp trên, Nhà trường"
+                setCategories(catArray.filter((c: DocumentCategory) => c.type === 'document_field'));
             } catch (err) {
-                console.error('Error loading filters:', err);
+                console.error('Error loading categories:', err);
             }
         };
-        loadFilters();
+        loadCategories();
     }, []);
 
     // Load documents
@@ -127,17 +130,8 @@ export default function DocumentsPage() {
             try {
                 const params = new URLSearchParams();
 
-                if (searchTerm) {
-                    params.append('search', searchTerm);
-                }
-                if (selectedYear !== 'all') {
-                    params.append('year', selectedYear);
-                }
-                if (selectedType !== 'all') {
-                    params.append('type', selectedType);
-                }
-                if (selectedField !== 'all') {
-                    params.append('field', selectedField);
+                if (selectedCategory !== 'all') {
+                    params.append('field', selectedCategory);
                 }
 
                 const responseData = await api.get<Document[] | { data: Document[] }>(`/client/documents?${params.toString()}`);
@@ -151,7 +145,11 @@ export default function DocumentsPage() {
         };
 
         loadDocuments();
-    }, [searchTerm, selectedYear, selectedType, selectedField]);
+    }, [selectedCategory]);
+
+    const handleCategoryChange = (event: React.SyntheticEvent, newValue: string) => {
+        setSelectedCategory(newValue);
+    };
 
     return (
         <Box sx={{ bgcolor: 'var(--background)', minHeight: '100vh' }}>
@@ -174,69 +172,32 @@ export default function DocumentsPage() {
             </Box>
 
             <Container maxWidth="lg">
-                <Card sx={{ p: 3, mb: 4 }}>
-                    <Grid container spacing={2}>
-                        <Grid size={{ xs: 12, md: 3 }}>
-                            <TextField
-                                fullWidth
-                                placeholder="Tìm kiếm văn bản..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                InputProps={{
-                                    startAdornment: <SearchIcon sx={{ mr: 1, color: '#999' }} />,
-                                }}
-                            />
-                        </Grid>
-                        <Grid size={{ xs: 12, sm: 4, md: 3 }}>
-                            <TextField
-                                fullWidth
-                                select
-                                label="Năm ban hành"
-                                value={selectedYear}
-                                onChange={(e) => setSelectedYear(e.target.value)}
-                            >
-                                <MenuItem value="all">Tất cả</MenuItem>
-                                {years.map((year) => (
-                                    <MenuItem key={year} value={year.toString()}>
-                                        {year}
-                                    </MenuItem>
-                                ))}
-                            </TextField>
-                        </Grid>
-                        <Grid size={{ xs: 12, sm: 4, md: 3 }}>
-                            <TextField
-                                fullWidth
-                                select
-                                label="Loại văn bản"
-                                value={selectedType}
-                                onChange={(e) => setSelectedType(e.target.value)}
-                            >
-                                <MenuItem value="all">Tất cả</MenuItem>
-                                {types.map((type) => (
-                                    <MenuItem key={type} value={type}>
-                                        {type}
-                                    </MenuItem>
-                                ))}
-                            </TextField>
-                        </Grid>
-                        <Grid size={{ xs: 12, sm: 4, md: 3 }}>
-                            <TextField
-                                fullWidth
-                                select
-                                label="Lĩnh vực"
-                                value={selectedField}
-                                onChange={(e) => setSelectedField(e.target.value)}
-                            >
-                                <MenuItem value="all">Tất cả</MenuItem>
-                                {fields.map((field) => (
-                                    <MenuItem key={field} value={field}>
-                                        {field}
-                                    </MenuItem>
-                                ))}
-                            </TextField>
-                        </Grid>
-                    </Grid>
-                </Card>
+                {/* Filter Tabs */}
+                <Box sx={{ mb: 4, borderBottom: 1, borderColor: 'divider' }}>
+                    <Tabs
+                        value={selectedCategory}
+                        onChange={handleCategoryChange}
+                        variant="scrollable"
+                        scrollButtons="auto"
+                        sx={{
+                            '& .MuiTab-root': {
+                                fontWeight: 600,
+                                fontSize: '1rem',
+                            },
+                            '& .Mui-selected': {
+                                color: 'var(--primary-color) !important',
+                            },
+                            '& .MuiTabs-indicator': {
+                                backgroundColor: 'var(--primary-color)',
+                            },
+                        }}
+                    >
+                        <Tab label="Tất cả" value="all" />
+                        {categories.map((category) => (
+                            <Tab key={category.id} label={category.name} value={category.name} />
+                        ))}
+                    </Tabs>
+                </Box>
 
                 <Typography variant="body2" sx={{ mb: 2, color: '#666' }}>
                     {loading ? 'Đang tải...' : `Tìm thấy ${documents.length} văn bản`}

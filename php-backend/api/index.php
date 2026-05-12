@@ -172,6 +172,9 @@ elseif ($uri === '/admin/categories/document' && $method === 'GET') {
 elseif ($uri === '/client/procedures' && $method === 'GET') {
     (new ProcedureController())->index();
 }
+elseif ($uri === '/client/categories/procedure' && $method === 'GET') {
+    (new ProcedureController())->categories();
+}
 
 // PROCEDURES (ADMIN)
 elseif ($uri === '/admin/procedures' && $method === 'GET') {
@@ -189,6 +192,9 @@ elseif (preg_match('#^/admin/procedures/([^/]+)$#', $uri, $matches)) {
 // REFORMS (PUBLIC)
 elseif ($uri === '/client/reforms' && $method === 'GET') {
     (new ReformController())->index();
+}
+elseif ($uri === '/client/categories/reform' && $method === 'GET') {
+    (new ReformController())->categories();
 }
 
 // REFORMS (ADMIN)
@@ -239,6 +245,28 @@ elseif (preg_match('#^/admin/categories/document/([^/]+)$#', $uri, $matches)) {
     if ($method === 'GET') (new CategoryController())->showDocument($matches[1]);
     elseif ($method === 'PUT') (new CategoryController())->updateDocument($matches[1]);
     elseif ($method === 'DELETE') (new CategoryController())->deleteDocument($matches[1]);
+}
+elseif ($uri === '/admin/categories/procedure' && $method === 'GET') {
+    (new CategoryController())->listProcedure();
+}
+elseif ($uri === '/admin/categories/procedure' && $method === 'POST') {
+    (new CategoryController())->storeProcedure();
+}
+elseif (preg_match('#^/admin/categories/procedure/([^/]+)$#', $uri, $matches)) {
+    if ($method === 'GET') (new CategoryController())->showProcedure($matches[1]);
+    elseif ($method === 'PUT') (new CategoryController())->updateProcedure($matches[1]);
+    elseif ($method === 'DELETE') (new CategoryController())->deleteProcedure($matches[1]);
+}
+elseif ($uri === '/admin/categories/reform' && $method === 'GET') {
+    (new CategoryController())->listReform();
+}
+elseif ($uri === '/admin/categories/reform' && $method === 'POST') {
+    (new CategoryController())->storeReform();
+}
+elseif (preg_match('#^/admin/categories/reform/([^/]+)$#', $uri, $matches)) {
+    if ($method === 'GET') (new CategoryController())->showReform($matches[1]);
+    elseif ($method === 'PUT') (new CategoryController())->updateReform($matches[1]);
+    elseif ($method === 'DELETE') (new CategoryController())->deleteReform($matches[1]);
 }
 
 // SETTINGS (ADMIN)

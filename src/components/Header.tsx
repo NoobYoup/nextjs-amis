@@ -32,13 +32,12 @@ export default function Header() {
     };
 
     const menuItems = [
-        { text: 'Cải cách hành chính', path: '/reform' },
-        { text: 'Dạy học online', path: '/online-learning' },
         { text: 'Văn bản', path: '/documents' },
         { text: 'Thủ tục', path: '/procedures' },
-        { text: 'Tin tức', path: '/news' },
-        { text: 'Liên hệ', path: '/contact' },
+        { text: 'Công khai', path: '/reform' },
         { text: 'Hình ảnh', path: '/activities' },
+        { text: 'Day học online', path: '/online-learning' },
+        { text: 'Liên hệ', path: '/contact' },
         { text: 'Góp ý', path: '/feedback' },
     ];
 

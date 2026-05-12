@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.2.0
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Dec 19, 2025 at 04:28 AM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.0.30
+-- Host: localhost:3306
+-- Generation Time: May 10, 2026 at 09:22 PM
+-- Server version: 10.4.21-MariaDB
+-- PHP Version: 7.2.34
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -28,13 +28,13 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `activities` (
-  `id` varchar(191) NOT NULL,
-  `title` varchar(191) NOT NULL,
-  `description` text NOT NULL,
-  `categoryId` varchar(191) NOT NULL,
+  `id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `title` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `categoryId` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `date` datetime(3) NOT NULL,
-  `author` varchar(191) NOT NULL,
-  `thumbnail` text DEFAULT NULL,
+  `author` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `thumbnail` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `images` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`images`)),
   `videos` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`videos`)),
   `createdAt` datetime(3) NOT NULL DEFAULT current_timestamp(3),
@@ -46,7 +46,13 @@ CREATE TABLE `activities` (
 --
 
 INSERT INTO `activities` (`id`, `title`, `description`, `categoryId`, `date`, `author`, `thumbnail`, `images`, `videos`, `createdAt`, `updatedAt`) VALUES
-('97bcecde-5e0f-40b5-b8ba-09bcabf35ecb', 'HAPPY THE TEACHER’S DAY - LỄ CHÀO MỪNG NGÀY NHÀ GIÁO VIỆT NAM', 'kkk', '4a1bafc6-eebf-460b-ba4c-006947608e42', '2025-11-20 00:00:00.000', 'Đoàn trường', 'https://res.cloudinary.com/ddkwerwzg/image/upload/v1763914473/ofjkcwv1ob80bevuzbhf.jpg', '[\"https://res.cloudinary.com/ddkwerwzg/image/upload/v1763914473/ofjkcwv1ob80bevuzbhf.jpg\",\"https://res.cloudinary.com/ddkwerwzg/image/upload/v1763914475/kfzgdwao9trellsaywnk.jpg\",\"https://res.cloudinary.com/ddkwerwzg/image/upload/v1763914477/kxdd6us6algalttvct3b.jpg\",\"https://res.cloudinary.com/ddkwerwzg/image/upload/v1763914480/h3y5mpeaudfnroeyryuw.jpg\",\"https://res.cloudinary.com/ddkwerwzg/image/upload/v1763914483/nadyctjufyfgyrawqr69.jpg\",\"https://res.cloudinary.com/ddkwerwzg/image/upload/v1763914486/eraswsvvi6x8tg0jheyi.jpg\",\"https://res.cloudinary.com/ddkwerwzg/image/upload/v1763914489/clcb4nakr9seomxf6vwy.jpg\",\"https://res.cloudinary.com/ddkwerwzg/image/upload/v1763914492/ouq9dkak2jaewrudynex.jpg\",\"https://res.cloudinary.com/ddkwerwzg/image/upload/v1763914495/tcldx1stht9a5zwahlw7.jpg\",\"https://res.cloudinary.com/ddkwerwzg/image/upload/v1763914497/akg8tp8wo8cqzmanzpiv.jpg\",\"https://res.cloudinary.com/ddkwerwzg/image/upload/v1763914500/x6wzhwzb5bkkqghwjjw6.jpg\",\"https://res.cloudinary.com/ddkwerwzg/image/upload/v1763914503/q7jpc3jo49jyxk9lk2vx.jpg\"]', '[]', '2025-11-23 16:15:05.320', '2025-11-23 18:13:58.470');
+('15849edde4369eca94acbde20c8824c1', 'Hội Nghị Ban Chấp Hành Công Đoàn 2025', 'Hội Nghị Ban Chấp Hành Công Đoàn 2025 tại Trường TH&THCS Quốc Tế Mỹ Úc', 'c79db103-1ef6-4a2d-ab6c-217e17136224', '2025-11-28 00:00:00.000', 'Minh Trung', 'uploads/activities/69ae3e95e94f2.jpg', '[\"uploads\\/activities\\/69ae3e95e94f2.jpg\",\"uploads\\/activities\\/69ae3e95e95a6.jpg\",\"uploads\\/activities\\/69ae3e95e9602.jpg\",\"uploads\\/activities\\/69ae3e95e965a.jpg\",\"uploads\\/activities\\/69ae3e95e96ac.jpg\",\"uploads\\/activities\\/69ae3e95e96fe.jpg\",\"uploads\\/activities\\/69ae3e95e9751.jpg\",\"uploads\\/activities\\/69ae3e95e97d4.jpg\",\"uploads\\/activities\\/69ae3e95e9842.jpg\",\"uploads\\/activities\\/69ae3e95e9895.jpg\",\"uploads\\/activities\\/69ae3e95e98e8.jpg\",\"uploads\\/activities\\/69ae3e95e993a.jpg\",\"uploads\\/activities\\/69ae3e95e998c.jpg\",\"uploads\\/activities\\/69ae3e95e99dd.jpg\",\"uploads\\/activities\\/69ae3e95e9a30.jpg\",\"uploads\\/activities\\/69ae3e95e9a82.jpg\",\"uploads\\/activities\\/69ae3e95e9ad2.jpg\",\"uploads\\/activities\\/69ae3e95e9b25.jpg\"]', '[]', '2026-03-08 23:29:25.000', '2026-03-08 23:29:25.000'),
+('398f06ee789fadc6ed35e58e5cde6544', 'Họp Mặt Đầu Năm (Mùng 8 Tết)', 'Lãnh đạo cùng toàn thể giáo viên - công nhân viên họp mặt đầu năm 2026-2026', 'c79db103-1ef6-4a2d-ab6c-217e17136224', '2026-02-24 00:00:00.000', 'Minh Trung', 'uploads/activities/69ae26313e9c5.jpg', '[\"uploads\\/activities\\/69ae26313e9c5.jpg\",\"uploads\\/activities\\/69ae26313ea81.jpg\",\"uploads\\/activities\\/69ae26313eae5.jpg\",\"uploads\\/activities\\/69ae26313eb38.jpg\",\"uploads\\/activities\\/69ae26313eb8a.jpg\",\"uploads\\/activities\\/69ae26313ebdb.jpg\"]', '[]', '2026-03-08 21:45:21.000', '2026-03-08 21:45:21.000'),
+('3b9a616837254af0e0276fa38ed91b79', 'Giáng Sinh 2025', 'Hoạt động Giáng Sinh 2025-2026 tại Trường TH&THCS Quốc Tế Mỹ', 'c79db103-1ef6-4a2d-ab6c-217e17136224', '2025-12-24 00:00:00.000', 'Minh Trung', 'uploads/activities/69ae3e30dbef6.jpg', '[\"uploads\\/activities\\/69ae3e30dbef6.jpg\",\"uploads\\/activities\\/69ae3e30dbfe1.jpg\",\"uploads\\/activities\\/69ae3e30dc070.jpg\",\"uploads\\/activities\\/69ae3e30dc11e.jpg\",\"uploads\\/activities\\/69ae3e30dc1ad.jpg\",\"uploads\\/activities\\/69ae3e30dc232.jpg\",\"uploads\\/activities\\/69ae3e30dc2b2.jpg\",\"uploads\\/activities\\/69ae3e30dc339.jpg\",\"uploads\\/activities\\/69ae3e30dc3bd.jpg\",\"uploads\\/activities\\/69ae3e30dc444.jpg\",\"uploads\\/activities\\/69ae3e30dc4d6.jpg\",\"uploads\\/activities\\/69ae3e30dc56d.jpg\",\"uploads\\/activities\\/69ae3e30dc5ec.jpg\",\"uploads\\/activities\\/69ae3e30dc673.jpg\",\"uploads\\/activities\\/69ae3e30dc6f6.jpg\",\"uploads\\/activities\\/69ae3e30dc77e.jpg\"]', '[]', '2026-03-08 23:27:44.000', '2026-03-08 23:27:44.000'),
+('608fd5679b775931575c79ecf8003779', 'Hội Nghị Người Lao Động 2025-2026', 'Lãnh đạo cùng toàn thể giáo viên - công nhân viên tham dự Hội Nghị Người Lao Động 2025 & Chào Mừng Ngày Quốc Tế Phụ Nữ 8/3', 'c79db103-1ef6-4a2d-ab6c-217e17136224', '2026-03-06 00:00:00.000', 'Minh Trung', 'uploads/activities/69ae258532b5f.jpg', '[\"uploads\\/activities\\/69ae258532b5f.jpg\",\"uploads\\/activities\\/69ae258532c75.jpg\",\"uploads\\/activities\\/69ae258532cf9.jpg\",\"uploads\\/activities\\/69ae258532d70.jpg\",\"uploads\\/activities\\/69ae258532de7.jpg\",\"uploads\\/activities\\/69ae258532e81.jpg\",\"uploads\\/activities\\/69ae258532f1a.jpg\",\"uploads\\/activities\\/69ae258532f97.jpg\",\"uploads\\/activities\\/69ae25853300f.jpg\",\"uploads\\/activities\\/69ae258533090.jpg\",\"uploads\\/activities\\/69ae258533113.jpg\",\"uploads\\/activities\\/69ae258533190.jpg\",\"uploads\\/activities\\/69ae258533228.jpg\",\"uploads\\/activities\\/69ae2585332ad.jpg\",\"uploads\\/activities\\/69ae25853334b.jpg\",\"uploads\\/activities\\/69ae2585333c0.jpg\",\"uploads\\/activities\\/69ae258533443.jpg\",\"uploads\\/activities\\/69ae2585334cb.jpg\",\"uploads\\/activities\\/69ae258533542.jpg\"]', '[]', '2026-03-08 21:42:29.000', '2026-03-08 21:42:29.000'),
+('6120892b125d42714dd310b4454d1212', 'Tết Xuân Bính Ngọ 2026', 'Toàn thể Trường TH&THCS Quốc Tế Mỹ Úc chung vui ngày Tết Xuân Bính Ngọ 2026', 'c79db103-1ef6-4a2d-ab6c-217e17136224', '2026-02-11 00:00:00.000', 'Minh Trung', 'uploads/activities/69ae3b14c4137.jpg', '[\"uploads\\/activities\\/69ae3b14c4137.jpg\",\"uploads\\/activities\\/69ae3b14c4256.jpg\",\"uploads\\/activities\\/69ae3b14c42f1.jpg\",\"uploads\\/activities\\/69ae3b14c437c.jpg\",\"uploads\\/activities\\/69ae3b14c43ff.jpg\",\"uploads\\/activities\\/69ae3b14c4482.jpg\",\"uploads\\/activities\\/69ae3b14c44fd.jpg\",\"uploads\\/activities\\/69ae3b14c457f.jpg\",\"uploads\\/activities\\/69ae3b14c4603.jpg\",\"uploads\\/activities\\/69ae3b14c46ad.jpg\",\"uploads\\/activities\\/69ae3b14c4733.jpg\",\"uploads\\/activities\\/69ae3b14c47b4.jpg\",\"uploads\\/activities\\/69ae3b14c4838.jpg\",\"uploads\\/activities\\/69ae3b14c48c3.jpg\",\"uploads\\/activities\\/69ae3b14c4942.jpg\",\"uploads\\/activities\\/69ae3b14c49c4.jpg\",\"uploads\\/activities\\/69ae3b14c4a5d.jpg\",\"uploads\\/activities\\/69ae3b14c4af6.jpg\",\"uploads\\/activities\\/69ae3b14c4b7c.jpg\",\"uploads\\/activities\\/69ae3b14c4c01.jpg\",\"uploads\\/activities\\/69ae3b14c4c94.jpg\",\"uploads\\/activities\\/69ae3b14c4d24.jpg\",\"uploads\\/activities\\/69ae3b14c4db4.jpg\",\"uploads\\/activities\\/69ae3b14c4e73.jpg\",\"uploads\\/activities\\/69ae3b14c4f19.jpg\",\"uploads\\/activities\\/69ae3b14c4faf.jpg\",\"uploads\\/activities\\/69ae3b14c5045.jpg\",\"uploads\\/activities\\/69ae3b14c50db.jpg\",\"uploads\\/activities\\/69ae3b14c5176.jpg\",\"uploads\\/activities\\/69ae3b14c5286.jpg\",\"uploads\\/activities\\/69ae3b14c531f.jpg\",\"uploads\\/activities\\/69ae3b14c53c0.jpg\",\"uploads\\/activities\\/69ae3b14c5448.jpg\",\"uploads\\/activities\\/69ae3b14c54ca.jpg\",\"uploads\\/activities\\/69ae3b14c554c.jpg\",\"uploads\\/activities\\/69ae3b14c55eb.jpg\",\"uploads\\/activities\\/69ae3b14c5680.jpg\",\"uploads\\/activities\\/69ae3b14c570a.jpg\",\"uploads\\/activities\\/69ae3b14c578d.jpg\",\"uploads\\/activities\\/69ae3b14c5815.jpg\"]', '[]', '2026-03-08 23:14:28.000', '2026-03-08 23:14:28.000'),
+('7d766cc5474f52a8bf6d7cbc972f41cf', 'Tuyên Truyền An Toàn Giao Thông 2026-2027', 'Người tuyên truyền: Đồng chí Lại Hoàng Thi - Đội CSGT Chợ Lớn', '4a1bafc6-eebf-460b-ba4c-006947608e42', '2026-01-09 00:00:00.000', 'Minh Trung', 'uploads/activities/69ae23e53736b.jpg', '[\"uploads\\/activities\\/69ae23e53736b.jpg\",\"uploads\\/activities\\/69ae23e537415.jpg\",\"uploads\\/activities\\/69ae23e537488.jpg\",\"uploads\\/activities\\/69ae23e5374e5.jpg\",\"uploads\\/activities\\/69ae23e537538.jpg\",\"uploads\\/activities\\/69ae23e537588.jpg\",\"uploads\\/activities\\/69ae23e5375d8.jpg\",\"uploads\\/activities\\/69ae23e537633.jpg\",\"uploads\\/activities\\/69ae23e537683.jpg\",\"uploads\\/activities\\/69ae23e5376d5.jpg\",\"uploads\\/activities\\/69ae23e537725.jpg\",\"uploads\\/activities\\/69ae23e537775.jpg\",\"uploads\\/activities\\/69ae23e5377c3.jpg\",\"uploads\\/activities\\/69ae23e537812.jpg\",\"uploads\\/activities\\/69ae23e537871.jpg\",\"uploads\\/activities\\/69ae23e5378c2.jpg\",\"uploads\\/activities\\/69ae23e537911.jpg\",\"uploads\\/activities\\/69ae23e537961.jpg\",\"uploads\\/activities\\/69ae23e5379c0.jpg\",\"uploads\\/activities\\/69ae23e537a19.jpg\",\"uploads\\/activities\\/69ae23e537a69.jpg\",\"uploads\\/activities\\/69ae23e537ab9.jpg\",\"uploads\\/activities\\/69ae23e537b0f.jpg\",\"uploads\\/activities\\/69ae23e537b60.jpg\",\"uploads\\/activities\\/69ae23e537bb0.jpg\",\"uploads\\/activities\\/69ae23e537c00.jpg\",\"uploads\\/activities\\/69ae23e537c64.jpg\",\"uploads\\/activities\\/69ae23e537cb5.jpg\",\"uploads\\/activities\\/69ae23e537d04.jpg\",\"uploads\\/activities\\/69ae23e537d53.jpg\",\"uploads\\/activities\\/69ae23e537da2.jpg\"]', '[]', '2026-03-08 21:35:33.000', '2026-03-08 21:35:33.000'),
+('cc3b42d7b29e72acaaca17a605e0c059', 'Tham Gia Chạy Olympic Hưởng Ứng Ngày Thể Thao Toàn Quốc', 'Phát động phong trào toàn dân tập thể dục thể thao rèn luyện sức khoẻ.', '4a1bafc6-eebf-460b-ba4c-006947608e42', '2026-03-22 00:00:00.000', 'Minh Trung', 'uploads/activities/69bf9e96d4583.jpg', '[\"uploads\\/activities\\/69bf9e96d4583.jpg\",\"uploads\\/activities\\/69bf9e96d46bc.jpg\",\"uploads\\/activities\\/69bf9e96d4745.jpg\",\"uploads\\/activities\\/69bf9e96d47b5.jpg\",\"uploads\\/activities\\/69bf9e96d484f.jpg\"]', '[]', '2026-03-22 03:47:34.000', '2026-03-22 03:47:34.000');
 
 -- --------------------------------------------------------
 
@@ -55,12 +61,12 @@ INSERT INTO `activities` (`id`, `title`, `description`, `categoryId`, `date`, `a
 --
 
 CREATE TABLE `activity_categories` (
-  `id` varchar(191) NOT NULL,
-  `name` varchar(191) NOT NULL,
+  `id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `createdAt` datetime(3) NOT NULL DEFAULT current_timestamp(3),
   `updatedAt` datetime(3) NOT NULL,
   `deletedAt` datetime(3) DEFAULT NULL,
-  `deletedBy` varchar(191) DEFAULT NULL
+  `deletedBy` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -68,9 +74,8 @@ CREATE TABLE `activity_categories` (
 --
 
 INSERT INTO `activity_categories` (`id`, `name`, `createdAt`, `updatedAt`, `deletedAt`, `deletedBy`) VALUES
-('41cd43ef-05d4-4f3b-8e5e-6ab29d718edb', 'kkkk', '2025-11-09 05:53:38.979', '2025-11-09 05:53:50.811', '2025-11-09 05:53:50.808', NULL),
 ('4a1bafc6-eebf-460b-ba4c-006947608e42', 'Hoạt động ngoại khóa', '2025-11-09 02:30:25.406', '2025-11-09 06:01:58.104', NULL, NULL),
-('5c438cac-5c31-4378-90e5-19767ed5c256', 'kakaka', '2025-11-09 05:57:56.674', '2025-11-09 05:59:23.810', '2025-11-09 05:59:23.808', NULL),
+('72db7d173c0eeff531b11283d57efafc', 'test', '2026-03-25 05:12:29.000', '2026-03-25 05:12:29.000', '2026-03-25 05:12:36.000', NULL),
 ('89c2d7d8-ef22-4e7b-b6d3-06fe4793a2bc', 'Văn nghệ', '2025-11-09 02:30:25.406', '2025-11-09 02:30:25.406', NULL, NULL),
 ('c1d08adf-2eb4-486f-907e-1fe974333968', 'Học tập', '2025-11-09 02:30:25.406', '2025-11-09 02:30:25.406', NULL, NULL),
 ('c44914ac-54ce-4704-a063-01dc00b7396c', 'Thi đấu thể thao', '2025-11-09 02:30:25.406', '2025-11-09 02:30:25.406', NULL, NULL),
@@ -83,16 +88,16 @@ INSERT INTO `activity_categories` (`id`, `name`, `createdAt`, `updatedAt`, `dele
 --
 
 CREATE TABLE `documents` (
-  `id` varchar(191) NOT NULL,
-  `title` varchar(191) NOT NULL,
-  `type` varchar(191) NOT NULL,
-  `number` varchar(191) NOT NULL,
+  `id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `title` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `type` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `number` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `date` datetime(3) NOT NULL,
-  `field` varchar(191) NOT NULL,
-  `summary` text DEFAULT NULL,
+  `field` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `summary` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `isNew` tinyint(1) NOT NULL DEFAULT 0,
   `createdAt` datetime(3) NOT NULL DEFAULT current_timestamp(3),
-  `updatedAt` datetime(3) NOT NULL
+  `updatedAt` datetime(3) NOT NULL DEFAULT current_timestamp(3)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -113,11 +118,11 @@ INSERT INTO `documents` (`id`, `title`, `type`, `number`, `date`, `field`, `summ
 --
 
 CREATE TABLE `document_categories` (
-  `id` varchar(191) NOT NULL,
-  `name` varchar(191) NOT NULL,
-  `type` varchar(191) NOT NULL,
+  `id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `type` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `createdAt` datetime(3) NOT NULL DEFAULT current_timestamp(3),
-  `updatedAt` datetime(3) NOT NULL
+  `updatedAt` datetime(3) NOT NULL DEFAULT current_timestamp(3)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -144,13 +149,13 @@ INSERT INTO `document_categories` (`id`, `name`, `type`, `createdAt`, `updatedAt
 --
 
 CREATE TABLE `document_files` (
-  `id` varchar(191) NOT NULL,
-  `documentId` varchar(191) NOT NULL,
-  `fileUrl` text NOT NULL,
-  `fileType` varchar(191) NOT NULL DEFAULT 'pdf',
+  `id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `documentId` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `fileUrl` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `fileType` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pdf',
   `order` int(11) NOT NULL DEFAULT 0,
   `createdAt` datetime(3) NOT NULL DEFAULT current_timestamp(3),
-  `updatedAt` datetime(3) NOT NULL
+  `updatedAt` datetime(3) NOT NULL DEFAULT current_timestamp(3)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -175,16 +180,47 @@ INSERT INTO `document_files` (`id`, `documentId`, `fileUrl`, `fileType`, `order`
 --
 
 CREATE TABLE `news` (
-  `id` varchar(191) NOT NULL,
-  `title` varchar(191) NOT NULL,
-  `description` text NOT NULL,
-  `content` text NOT NULL,
-  `category` varchar(191) NOT NULL,
+  `id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `title` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `content` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `category` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `date` datetime(3) NOT NULL,
-  `thumbnail` text DEFAULT NULL,
+  `thumbnail` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `createdAt` datetime(3) NOT NULL DEFAULT current_timestamp(3),
   `updatedAt` datetime(3) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `news`
+--
+
+INSERT INTO `news` (`id`, `title`, `description`, `content`, `category`, `date`, `thumbnail`, `createdAt`, `updatedAt`) VALUES
+('12a4abc35ea792733329d54a73efad59', 'Thông báo tuyển sinh 2026', 'Hệ Thống Trường Quốc Tế Mỹ Úc - Khẳng định thương hiệu bằng chất lượng giảng dạy và công nghệ đào tạo tiên tiến', '<p>Hệ&nbsp;thống Trường Quốc tế&nbsp;Mỹ&nbsp;Úc (Australian American International School - AMIS) là một trong những đơn vị&nbsp;giáo dục đi tiên phong tại Việt Nam giảng dạy chương trình giáo dục quốc tế, khoa học và trang bị công nghệ đào tạo tiên tiến: bảng tương tác thông minh (SmartBoard), máy chiếu LCD, hệ&nbsp;thống âm thanh, ánh sáng theo tiêu chuẩn được áp dụng tại NASA, MIT,&nbsp;ĐH Harvard để&nbsp;phục vụ&nbsp;công tác dạy và học, đây là phương pháp học hiện đại, khoa học và đạt hiệu quả cao.</p><p>Trường Quốc tế AMIS đã đi vào hoạt động từ&nbsp;năm học 2007 -&nbsp;2008 với hệ&nbsp;thống quốc tế bao gồm: Trường Tiểu Học và Trung Học Cơ Sở, Trung Tâm Anh Ngữ có trụ sở chính tại số 62 - 62A, Minh Phụng, Phường Bình Tây, TP.HCM. Ngay từ&nbsp;những ngày đầu thành lập, AMIS đã xác định: Chiến lược của nhà trường là đào tạo một thế&nbsp;hệ các em học sinh Việt nam&nbsp;năng động, sáng tạo,&nbsp; đạo đức, tư duy độc lập, có kỹ năng lãnh đạo và sẵn&nbsp;sàng đương đầu với mọi thử&nbsp;thách bằng cách tạo dựng một môi trường học tập khoa học luôn khuyến khích tinh thần đoàn kết và quan tâm lẫn nhau, nhằm phát huy tối đa năng lực của nhân tài...Vì vậy, AMIS đã lựa chọn cho mình một chương trình giáo dục quốc tế khoa học, một đội ngũ&nbsp;giáo viên nước ngoài chuyên nghiệp đến từ&nbsp;Anh,&nbsp;Mỹ, Úc…cùng những giảng viên Việt Nam được tuyển dụng và đào tạo xuất sắc nhất với mục tiêu mong muốn một thế hệ các em học sinh Việt Nam có được những cơ&nbsp;hội giáo dục công bằng tốt nhất với một chi phí giáo dục thấp nhất để giúp cho các em có được sự&nbsp;phát triển toàn diện cho cuộc sống hôm nay và cho cả&nbsp;sự nghiệp thành công trong tương lai.</p><p></p><p><strong>Hệ&nbsp;thống cơ&nbsp;sở&nbsp;vật chất, phương tiện giảng dạy tiên tiến</strong></p><p></p><p>AMIS được xây dựng với tổng diện tích gần 1,000 m², có 2 sân chơi, 12 phòng học, 1 phòng thực hành đa phương tiện, 1 phòng học Anh ngữ&nbsp;sử&nbsp;dụng công nghệ&nbsp;tương tác (trang bị&nbsp;bảng tương tác thông minh SmartBoard, máy chiếu LCD), 1 phòng y tế&nbsp;và khu nhà&nbsp;ăn rộng rãi thoáng mát; hệ&nbsp;thống âm thanh, ánh sáng theo tiêu chuẩn được áp dụng tại NASA, MIT,&nbsp;ĐH Harvard. Tất cả&nbsp;lớp học đều được trang bị&nbsp;tiện nghi với máy điều hòa, bàn ghế&nbsp;theo tiêu chuẩn quốc tế, kết nối internet không dây…&nbsp;Bên cạnh việc trang bị&nbsp;công nghệ&nbsp;dạy học tiên tiến, AMIS cũng đầu tư&nbsp;chất lượng cao về&nbsp;giảng dạy và học tập với sĩ&nbsp;số&nbsp;trung bình từ 15-25 học viên/lớp học.</p><p></p><p><strong>Phương pháp đào tạo hiệu quả</strong></p><p></p><p>Đến với AMIS, học sinh sẽ&nbsp;được đào tạo theo các phương pháp giáo dục tiên tiến&nbsp;trên thế&nbsp;giới như:</p><p>Phương pháp Tương Tác - Interactive Method: lấy học sinh làm trung tâm của lớp học, giúp học viên tiếp thu kiến thức dễ&nbsp;dàng, không gây áp lực học tập, tạo cho các em kỹ&nbsp;năng làm việc theo đội nhóm, kỹ năng thuyết trình (nghệ thuật nói trước công chúng), và kỹ năng xử lý tình huống. Những kỹ năng quan trọng này sẽ giúp cho các em có được sự&nbsp;mạnh dạn và tự&nbsp;tin khi trình bày&nbsp;ý kiến trước đám đông và tính cách sôi nổi, năng động trong suy nghĩ&nbsp;và học tập.</p><p>Phương pháp Schooling Spirit: phát triển khả&nbsp;năng, suy nghĩ&nbsp;và làm việc theo tinh thần đội nhóm, khả&nbsp;năng sắp xếp tổ&nbsp;chức đội hình làm việc và công việc một cách khoa học. Biết phát huy sức mạnh tập thể&nbsp;để&nbsp;đạt mục tiêu chung.</p><p>Phương pháp Freedom Through Responsibility: phát triển khả&nbsp;năng làm việc tự&nbsp;giác, chịu trách nhiệm với kết quả&nbsp;công việc của mình. Phương pháp này tạo cho học viên có thói quen tư&nbsp;duy và làm việc độc lập,&nbsp;sẵn sàng tự&nbsp;chịu trách nhiệm trước kết quả&nbsp;hành động của mình. Học viên tự&nbsp;biết đánh giá về&nbsp;bản thân mình, tự&nbsp;nhận ra những mặt mạnh - yếu của bản thân.</p><p>Bên cạnh đó, với thế&nbsp;mạnh là đội ngũ&nbsp;giáo viên nước ngoài và Việt Nam nhiều kinh nghiệm, giảng dạy nhiệt tình cùng phương pháp truyền đạt hiện đại: học sinh là trung tâm của lớp học và người giáo viên đóng vai trò hướng dẫn, học sinh tự&nbsp;trải nghiệm các tình huống và ngữ&nbsp;cảnh, các bài học sẽ&nbsp;được học sinh ghi nhớ&nbsp;một cách tự&nbsp;nhiên thông qua các hoạt động thực tế.&nbsp;Đồng thời, giáo&nbsp;viên cũng xây dựng môi trường dạy và học sử&nbsp;dụng hoàn toàn bằng tiếng Anh, giúp học sinh có điều kiện tương tác trực tiếp với ngữ&nbsp;cảnh và ngôn ngữ, giúp việc sử&nbsp;dụng ngôn ngữ&nbsp;được thường xuyên và tự&nbsp;nhiên.</p><p>AMIS đã được&nbsp;Đại học Cambridge công nhận là đơn vị&nbsp;chuẩn bị&nbsp;và đào tạo xuất sắc các kỳ&nbsp;thi ESOL Cambridge; cung cấp các kỳ&nbsp;thi của Trung tâm Khảo thí Hoa Kỳ&nbsp;- Educational Testing Service (ETS) và của&nbsp;Đại học Michigan (Mỹ). Ngoài ra, AMIS đã ký kết với tổ&nbsp;chức giáo dục Language Corps Hoa Kỳ&nbsp;triển khai chương trình đào tạo giáo viên dạy tiếng Anh toàn cầu để&nbsp;lấy chứng chỉ&nbsp;TEFL - là chương trình đào tạo giáo viên uy tín và chất lượng tại VN.</p>', 'Tất cả', '2026-04-13 00:00:00.000', NULL, '2026-04-13 14:25:26.000', '2026-04-13 14:25:26.000');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `news_files`
+--
+
+CREATE TABLE `news_files` (
+  `id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `newsId` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `fileUrl` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `fileType` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pdf',
+  `fileName` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `order` int(11) NOT NULL DEFAULT 0,
+  `createdAt` datetime(3) NOT NULL DEFAULT current_timestamp(3),
+  `updatedAt` datetime(3) NOT NULL DEFAULT current_timestamp(3) ON UPDATE current_timestamp(3)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `news_files`
+--
+
+INSERT INTO `news_files` (`id`, `newsId`, `fileUrl`, `fileType`, `fileName`, `order`, `createdAt`, `updatedAt`) VALUES
+('ca3b6d2dcfb8880aa2f33d4b58692852', '12a4abc35ea792733329d54a73efad59', 'uploads/news/files/69dd3516bf5ba.doc', 'doc', 'THÔNG BÁO TUYỂN SINH 2026 - 2027.doc', 0, '2026-04-13 14:25:26.000', '2026-04-13 14:25:26.000');
 
 -- --------------------------------------------------------
 
@@ -193,9 +229,9 @@ CREATE TABLE `news` (
 --
 
 CREATE TABLE `news_images` (
-  `id` varchar(191) NOT NULL,
-  `newsId` varchar(191) NOT NULL,
-  `imageUrl` text NOT NULL,
+  `id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `newsId` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `imageUrl` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `order` int(11) NOT NULL DEFAULT 0,
   `createdAt` datetime(3) NOT NULL DEFAULT current_timestamp(3),
   `updatedAt` datetime(3) NOT NULL
@@ -208,13 +244,20 @@ CREATE TABLE `news_images` (
 --
 
 CREATE TABLE `procedures` (
-  `id` varchar(191) NOT NULL,
-  `title` varchar(191) NOT NULL,
-  `category` varchar(191) NOT NULL,
-  `description` text NOT NULL,
+  `id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `title` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `category` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `createdAt` datetime(3) NOT NULL DEFAULT current_timestamp(3),
-  `updatedAt` datetime(3) NOT NULL
+  `updatedAt` datetime(3) NOT NULL DEFAULT current_timestamp(3)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `procedures`
+--
+
+INSERT INTO `procedures` (`id`, `title`, `category`, `description`, `createdAt`, `updatedAt`) VALUES
+('5d7ab3470b299553cc3bba75a2114a1d', 'test', 'test', 'test', '2026-05-10 20:56:38.000', '2026-05-10 20:56:38.000');
 
 -- --------------------------------------------------------
 
@@ -223,13 +266,20 @@ CREATE TABLE `procedures` (
 --
 
 CREATE TABLE `procedure_contents` (
-  `id` varchar(191) NOT NULL,
-  `procedureId` varchar(191) NOT NULL,
-  `title` varchar(191) NOT NULL,
+  `id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `procedureId` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `title` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `items` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`items`)),
   `createdAt` datetime(3) NOT NULL DEFAULT current_timestamp(3),
-  `updatedAt` datetime(3) NOT NULL
+  `updatedAt` datetime(3) NOT NULL DEFAULT current_timestamp(3)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `procedure_contents`
+--
+
+INSERT INTO `procedure_contents` (`id`, `procedureId`, `title`, `items`, `createdAt`, `updatedAt`) VALUES
+('21d377c1104ddb3bfbbf9df2cbd849b2', '5d7ab3470b299553cc3bba75a2114a1d', 'test', '[\"test\"]', '2026-05-10 20:56:38.200', '2026-05-10 20:56:38.200');
 
 -- --------------------------------------------------------
 
@@ -238,14 +288,21 @@ CREATE TABLE `procedure_contents` (
 --
 
 CREATE TABLE `procedure_files` (
-  `id` varchar(191) NOT NULL,
-  `procedureId` varchar(191) NOT NULL,
-  `fileUrl` text NOT NULL,
-  `fileType` varchar(191) NOT NULL,
-  `fileName` varchar(191) DEFAULT NULL,
+  `id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `procedureId` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `fileUrl` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `fileType` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `fileName` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `createdAt` datetime(3) NOT NULL DEFAULT current_timestamp(3),
-  `updatedAt` datetime(3) NOT NULL
+  `updatedAt` datetime(3) NOT NULL DEFAULT current_timestamp(3)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `procedure_files`
+--
+
+INSERT INTO `procedure_files` (`id`, `procedureId`, `fileUrl`, `fileType`, `fileName`, `createdAt`, `updatedAt`) VALUES
+('735bcab3b8c3bc4a76a11f18803804d5', '5d7ab3470b299553cc3bba75a2114a1d', 'uploads/procedures/6a008e9632333.png', 'image', NULL, '2026-05-10 20:56:38.205', '2026-05-10 20:56:38.205');
 
 -- --------------------------------------------------------
 
@@ -254,12 +311,12 @@ CREATE TABLE `procedure_files` (
 --
 
 CREATE TABLE `reforms` (
-  `id` varchar(191) NOT NULL,
-  `title` varchar(191) NOT NULL,
-  `description` text NOT NULL,
+  `id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `title` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `details` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`details`)),
-  `createdAt` datetime(3) NOT NULL DEFAULT current_timestamp(3),
-  `updatedAt` datetime(3) NOT NULL
+  `createdAt` datetime DEFAULT current_timestamp(),
+  `updatedAt` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -267,9 +324,9 @@ CREATE TABLE `reforms` (
 --
 
 INSERT INTO `reforms` (`id`, `title`, `description`, `details`, `createdAt`, `updatedAt`) VALUES
-('581c632e-7543-41d1-b300-5ba5d70db8d7', 'Công khai thông tin chất lượng giáo dục thực tế của Trung tâm Anh ngữ Mỹ Úc năm học 2024-2025', 'Kèm theo Thông tư 09/2024/TT-BGDĐT ngày 03 tháng 06 năm 2024 của Bộ giáo dục và Đào tạo', '[\"Thông tin về kết quả đánh giá và kiểm định chất lượng giáo dục.\"]', '2025-11-24 16:40:57.253', '2025-11-24 16:40:57.253'),
-('8324eb37-f218-4ae3-9f6b-549879480542', 'Thông tin cơ sở vật chất của Trung tâm Anh ngữ Mỹ Úc năm học 2025-2026', 'Thông tin về cơ sở vật chất và tài liệu học tập sử dụng chung.', '[\"Thông tin về cơ sở vật chất và tài liệu học tập sử dụng chung.\"]', '2025-11-24 16:38:05.443', '2025-11-24 16:38:05.443'),
-('922796c6-40a6-4134-93be-aac231960c1a', 'Thông tin về đội ngũ nhà giáo, cán bộ quản lý và nhân viên của Trung tâm Anh ngữ Mỹ Úc năm học 2025-2026.', 'Thông tin về đội ngũ giáo viên, cán bộ quản lý và nhân viên.', '[\"Thông tin về đội ngũ giáo viên, cán bộ quản lý và nhân viên.\"]', '2025-11-24 16:35:34.672', '2025-11-24 16:36:23.404');
+('581c632e-7543-41d1-b300-5ba5d70db8d7', 'Công khai thông tin chất lượng giáo dục thực tế của Trung tâm Anh ngữ Mỹ Úc năm học 2024-2025', 'Kèm theo Thông tư 09/2024/TT-BGDĐT ngày 03 tháng 06 năm 2024 của Bộ giáo dục và Đào tạo', '[\"Thông tin về kết quả đánh giá và kiểm định chất lượng giáo dục.\"]', '2025-11-24 16:40:57', '2025-11-24 16:40:57'),
+('8324eb37-f218-4ae3-9f6b-549879480542', 'Thông tin cơ sở vật chất của Trung tâm Anh ngữ Mỹ Úc năm học 2025-2026', 'Thông tin về cơ sở vật chất và tài liệu học tập sử dụng chung.', '[\"Thông tin về cơ sở vật chất và tài liệu học tập sử dụng chung.\"]', '2025-11-24 16:38:05', '2025-11-24 16:38:05'),
+('922796c6-40a6-4134-93be-aac231960c1a', 'Thông tin về đội ngũ nhà giáo, cán bộ quản lý và nhân viên của Trung tâm Anh ngữ Mỹ Úc năm học 2025-2026.', 'Thông tin về đội ngũ giáo viên, cán bộ quản lý và nhân viên.', '[\"Thông tin về đội ngũ giáo viên, cán bộ quản lý và nhân viên.\"]', '2025-11-24 16:35:34', '2025-11-24 16:36:23');
 
 -- --------------------------------------------------------
 
@@ -278,13 +335,13 @@ INSERT INTO `reforms` (`id`, `title`, `description`, `details`, `createdAt`, `up
 --
 
 CREATE TABLE `reform_files` (
-  `id` varchar(191) NOT NULL,
-  `fileUrl` varchar(191) NOT NULL,
-  `fileType` varchar(191) NOT NULL,
+  `id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `fileUrl` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `fileType` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `order` int(11) NOT NULL DEFAULT 0,
-  `reformId` varchar(191) NOT NULL,
-  `createdAt` datetime(3) NOT NULL DEFAULT current_timestamp(3),
-  `updatedAt` datetime(3) NOT NULL
+  `reformId` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `createdAt` datetime DEFAULT current_timestamp(),
+  `updatedAt` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -292,10 +349,10 @@ CREATE TABLE `reform_files` (
 --
 
 INSERT INTO `reform_files` (`id`, `fileUrl`, `fileType`, `order`, `reformId`, `createdAt`, `updatedAt`) VALUES
-('279be508-80ac-44df-aaa5-e007b58d8e87', 'https://res.cloudinary.com/ddkwerwzg/image/upload/v1764002138/reforms/ttpnaiefxld1yotiiyum.jpg', 'image', 0, '922796c6-40a6-4134-93be-aac231960c1a', '2025-11-24 16:35:39.823', '2025-11-24 16:35:39.823'),
-('4421e283-27cf-4daf-a5fb-b97e4bb8f9a2', 'https://res.cloudinary.com/ddkwerwzg/image/upload/v1764002295/reforms/vmo1nfmface0jju4z1zu.jpg', 'image', 1, '8324eb37-f218-4ae3-9f6b-549879480542', '2025-11-24 16:38:16.896', '2025-11-24 16:38:16.896'),
-('62785f58-c702-4399-91bd-01c860baa174', 'https://res.cloudinary.com/ddkwerwzg/image/upload/v1764002290/reforms/zebwdi3faczq62isfb6o.jpg', 'image', 0, '8324eb37-f218-4ae3-9f6b-549879480542', '2025-11-24 16:38:12.431', '2025-11-24 16:38:12.431'),
-('db936a4b-b4d5-4b20-ae71-8c1e52df24af', 'https://res.cloudinary.com/ddkwerwzg/image/upload/v1764002461/reforms/unckj5lupzrxjxiw2e9o.jpg', 'image', 0, '581c632e-7543-41d1-b300-5ba5d70db8d7', '2025-11-24 16:41:03.189', '2025-11-24 16:41:03.189');
+('279be508-80ac-44df-aaa5-e007b58d8e87', 'https://res.cloudinary.com/ddkwerwzg/image/upload/v1764002138/reforms/ttpnaiefxld1yotiiyum.jpg', 'image', 0, '922796c6-40a6-4134-93be-aac231960c1a', '2025-11-24 16:35:39', '2025-11-24 16:35:39'),
+('4421e283-27cf-4daf-a5fb-b97e4bb8f9a2', 'https://res.cloudinary.com/ddkwerwzg/image/upload/v1764002295/reforms/vmo1nfmface0jju4z1zu.jpg', 'image', 1, '8324eb37-f218-4ae3-9f6b-549879480542', '2025-11-24 16:38:16', '2025-11-24 16:38:16'),
+('62785f58-c702-4399-91bd-01c860baa174', 'https://res.cloudinary.com/ddkwerwzg/image/upload/v1764002290/reforms/zebwdi3faczq62isfb6o.jpg', 'image', 0, '8324eb37-f218-4ae3-9f6b-549879480542', '2025-11-24 16:38:12', '2025-11-24 16:38:12'),
+('db936a4b-b4d5-4b20-ae71-8c1e52df24af', 'https://res.cloudinary.com/ddkwerwzg/image/upload/v1764002461/reforms/unckj5lupzrxjxiw2e9o.jpg', 'image', 0, '581c632e-7543-41d1-b300-5ba5d70db8d7', '2025-11-24 16:41:03', '2025-11-24 16:41:03');
 
 -- --------------------------------------------------------
 
@@ -304,18 +361,18 @@ INSERT INTO `reform_files` (`id`, `fileUrl`, `fileType`, `order`, `reformId`, `c
 --
 
 CREATE TABLE `tuitions` (
-  `id` varchar(191) NOT NULL,
-  `type` varchar(191) NOT NULL,
-  `description` text DEFAULT NULL,
-  `grade` varchar(191) DEFAULT NULL,
-  `level` varchar(191) DEFAULT NULL,
-  `tuition` varchar(191) DEFAULT NULL,
-  `discount` varchar(191) DEFAULT NULL,
-  `period` varchar(191) DEFAULT NULL,
+  `id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `type` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `grade` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `level` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `tuition` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `discount` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `period` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date` datetime(3) DEFAULT NULL,
-  `months` varchar(191) DEFAULT NULL,
-  `name` varchar(191) NOT NULL,
-  `typeFee` varchar(191) DEFAULT NULL,
+  `months` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `typeFee` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `createdAt` datetime(3) NOT NULL DEFAULT current_timestamp(3),
   `updatedAt` datetime(3) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -343,11 +400,11 @@ INSERT INTO `tuitions` (`id`, `type`, `description`, `grade`, `level`, `tuition`
 --
 
 CREATE TABLE `users` (
-  `id` varchar(191) NOT NULL,
-  `name` varchar(191) NOT NULL,
-  `email` varchar(191) NOT NULL,
-  `password` varchar(191) NOT NULL,
-  `role` varchar(191) NOT NULL DEFAULT 'admin',
+  `id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `password` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `role` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'admin',
   `createdAt` datetime(3) NOT NULL DEFAULT current_timestamp(3),
   `updatedAt` datetime(3) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -357,7 +414,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`, `createdAt`, `updatedAt`) VALUES
-('3675eaaf-7c35-4e0f-9929-7c860cfa73a9', 'Administrator', 'admin@amis.edu.vn', '$2b$12$Y8YxCQ5riBomeQ7GOD.5yuVFqCI6pp5yD/g2RaTA8THKlY8f/Go2i', 'admin', '2025-11-08 17:04:30.834', '2025-11-23 13:36:02.730');
+('3675eaaf-7c35-4e0f-9929-7c860cfa73a9', 'Administrator', 'admin@amis.edu.vn', '$2y$10$v8thgOkW8ObgEj0JQoAU7.vasqKY47KfYcZonjblV6G1.7d.FqUZu', 'admin', '2025-11-08 17:04:30.834', '2026-01-09 23:08:21.000');
 
 -- --------------------------------------------------------
 
@@ -366,11 +423,11 @@ INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`, `createdAt`, `up
 --
 
 CREATE TABLE `_prisma_migrations` (
-  `id` varchar(36) NOT NULL,
-  `checksum` varchar(64) NOT NULL,
+  `id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `checksum` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
   `finished_at` datetime(3) DEFAULT NULL,
-  `migration_name` varchar(255) NOT NULL,
-  `logs` text DEFAULT NULL,
+  `migration_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `logs` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `rolled_back_at` datetime(3) DEFAULT NULL,
   `started_at` datetime(3) NOT NULL DEFAULT current_timestamp(3),
   `applied_steps_count` int(10) UNSIGNED NOT NULL DEFAULT 0
@@ -441,6 +498,13 @@ ALTER TABLE `news`
   ADD PRIMARY KEY (`id`),
   ADD KEY `news_category_idx` (`category`),
   ADD KEY `news_date_idx` (`date`);
+
+--
+-- Indexes for table `news_files`
+--
+ALTER TABLE `news_files`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `news_files_newsId_idx` (`newsId`);
 
 --
 -- Indexes for table `news_images`
@@ -519,6 +583,12 @@ ALTER TABLE `activities`
 --
 ALTER TABLE `document_files`
   ADD CONSTRAINT `document_files_documentId_fkey` FOREIGN KEY (`documentId`) REFERENCES `documents` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `news_files`
+--
+ALTER TABLE `news_files`
+  ADD CONSTRAINT `news_files_newsId_fkey` FOREIGN KEY (`newsId`) REFERENCES `news` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `news_images`

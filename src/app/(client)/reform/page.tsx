@@ -12,6 +12,9 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import Chip from '@mui/material/Chip';
 import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
 import Dialog from '@mui/material/Dialog';
@@ -40,6 +43,7 @@ interface ReformFile {
 interface Reform {
     id: string;
     title: string;
+    category: string;
     description: string;
     details: string[];
     createdAt: string;
@@ -65,21 +69,30 @@ export default function Reform() {
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
     const [downloading, setDownloading] = useState<string | null>(null);
 
-    // Default icons for different types of reforms
-    const getIcon = (index: number) => {
-        const icons = [
-            <PeopleIcon key="people" />,
-            <SchoolIcon key="school" />,
-            <VerifiedUserIcon key="verified" />,
-            <AssignmentIcon key="assignment" />,
-        ];
-        return icons[index % icons.length];
-    };
+    const [selectedCategory, setSelectedCategory] = useState('all');
+    const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const data = await api.get<{ id: string; name: string }[]>('/client/categories/reform');
+                setCategories(data);
+            } catch (err) {
+                console.error('Error fetching categories:', err);
+            }
+        };
+        fetchCategories();
+    }, []);
 
     useEffect(() => {
         const loadReforms = async () => {
+            setLoading(true);
             try {
-                const { data } = await api.get<{ data: Reform[] }>('/client/reforms');
+                const params = new URLSearchParams();
+                if (selectedCategory !== 'all') {
+                    params.append('category', selectedCategory);
+                }
+                const { data } = await api.get<{ data: Reform[] }>(`/client/reforms?${params.toString()}`);
                 setReforms(data || []);
             } catch (err) {
                 console.error('Error loading reforms:', err);
@@ -90,17 +103,11 @@ export default function Reform() {
         };
 
         loadReforms();
-    }, []);
+    }, [selectedCategory]);
 
-    // Convert reforms to disclosure items format
-    const disclosureItems: DisclosureItem[] = reforms.map((reform, index) => ({
-        id: reform.id,
-        title: reform.title,
-        icon: getIcon(index),
-        description: reform.description,
-        details: reform.details,
-        files: reform.files,
-    }));
+    const handleCategoryChange = (event: React.SyntheticEvent, newValue: string) => {
+        setSelectedCategory(newValue);
+    };
 
     const handleDownload = async (reform: Reform, fileType: string) => {
         setDownloading(reform.id);
@@ -215,159 +222,109 @@ export default function Reform() {
                     </Typography>
                 </Card>
 
-                {/* Disclosure Items Grid */}
-                <Grid container spacing={3}>
-                    {disclosureItems.map((item) => (
-                        <Grid size={{ xs: 12, md: 4 }} key={item.id}>
-                            <Card
-                                sx={{
-                                    height: '100%',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    transition: 'all 0.3s ease',
-                                    '&:hover': {
-                                        boxShadow: 4,
-                                        transform: 'translateY(-4px)',
-                                    },
-                                }}
-                            >
-                                {/* Card Header */}
-                                <Box
-                                    sx={{
-                                        p: 3,
-                                        background:
-                                            'linear-gradient(135deg, rgba(124, 179, 66, 0.1) 0%, rgba(124, 179, 66, 0.05) 100%)',
-                                        borderBottom: '2px solid var(--primary-color)',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: 2,
-                                    }}
-                                >
-                                    <Box
-                                        sx={{
-                                            display: 'flex',
-                                            p: 1.5,
-                                            borderRadius: '50%',
-                                            bgcolor: 'var(--primary-color)',
-                                            color: 'white',
-                                            fontSize: 28,
-                                        }}
-                                    >
-                                        {item.icon}
-                                    </Box>
-                                    <Box>
-                                        <Typography variant="h6" sx={{ fontWeight: 700, mb: 0.5 }}>
-                                            {item.title}
+                {/* Filter Tabs */}
+                <Box sx={{ mb: 4, borderBottom: 1, borderColor: 'divider' }}>
+                    <Tabs
+                        value={selectedCategory}
+                        onChange={handleCategoryChange}
+                        variant="scrollable"
+                        scrollButtons="auto"
+                        sx={{
+                            '& .MuiTab-root': {
+                                fontWeight: 600,
+                                fontSize: '1rem',
+                            },
+                            '& .Mui-selected': {
+                                color: 'var(--primary-color) !important',
+                            },
+                            '& .MuiTabs-indicator': {
+                                backgroundColor: 'var(--primary-color)',
+                            },
+                        }}
+                    >
+                        <Tab label="Tất cả" value="all" />
+                        {categories.map((category) => (
+                            <Tab key={category.id} label={category.name} value={category.name} />
+                        ))}
+                    </Tabs>
+                </Box>
+
+                {/* Reforms List */}
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    {reforms.length === 0 ? (
+                        <Box sx={{ textAlign: 'center', py: 8 }}>
+                            <Typography variant="h6" sx={{ color: '#666', mb: 2 }}>
+                                Không tìm thấy thông tin công khai nào trong danh mục này
+                            </Typography>
+                        </Box>
+                    ) : (
+                        reforms.map((reform) => (
+                            <Card key={reform.id} sx={{ p: 3, '&:hover': { boxShadow: 4 } }}>
+                                <Grid container spacing={2} alignItems="center">
+                                    <Grid size={{ xs: 12, md: 8 }}>
+                                        <Box sx={{ display: 'flex', gap: 1, mb: 1, flexWrap: 'wrap' }}>
+                                            <Chip
+                                                label={reform.category || 'Khác'}
+                                                size="small"
+                                                sx={{
+                                                    bgcolor: 'var(--primary-color)',
+                                                    color: 'white',
+                                                    fontWeight: 600,
+                                                }}
+                                            />
+                                        </Box>
+                                        <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>
+                                            {reform.title}
                                         </Typography>
-                                    </Box>
-                                </Box>
-
-                                {/* Card Content */}
-                                <Box sx={{ p: 3, flex: 1 }}>
-                                    <Typography variant="body2" sx={{ color: '#666', mb: 2 }}>
-                                        {item.description}
-                                    </Typography>
-
-                                    <Typography
-                                        variant="subtitle2"
-                                        sx={{
-                                            fontWeight: 700,
-                                            color: 'var(--primary-color)',
-                                            mb: 1.5,
-                                        }}
-                                    >
-                                        Nội dung công khai:
-                                    </Typography>
-
-                                    <List sx={{ py: 0 }}>
-                                        {item.details.map((detail, idx) => (
-                                            <ListItem
-                                                key={idx}
-                                                sx={{
-                                                    py: 0.5,
-                                                    px: 0,
-                                                    display: 'flex',
-                                                    alignItems: 'flex-start',
-                                                }}
-                                            >
-                                                <ListItemIcon
-                                                    sx={{
-                                                        minWidth: 24,
-                                                        color: 'var(--primary-color)',
-                                                    }}
-                                                >
-                                                    <CheckCircleIcon sx={{ fontSize: 16 }} />
-                                                </ListItemIcon>
-                                                <ListItemText
-                                                    primary={detail}
-                                                    primaryTypographyProps={{
-                                                        variant: 'body2',
-                                                        sx: { color: '#555' },
-                                                    }}
-                                                />
-                                            </ListItem>
-                                        ))}
-                                    </List>
-                                </Box>
-
-                                {/* Card Footer - File Actions */}
-                                {item.files && item.files.length > 0 && (
-                                    <Box
-                                        sx={{
-                                            p: 2,
-                                            borderTop: '1px solid #e0e0e0',
-                                            bgcolor: '#f9f9f9',
-                                            display: 'flex',
-                                            gap: 1,
-                                        }}
-                                    >
-                                        {item.files.some((f) => f.fileType === 'image') && (
-                                            <Button
-                                                variant="contained"
-                                                startIcon={<ImageIcon />}
-                                                onClick={() =>
-                                                    handleOpenImageGallery(
-                                                        item.files
-                                                            .filter((f) => f.fileType === 'image')
-                                                            .map((f) => f.fileUrl),
-                                                    )
-                                                }
-                                                sx={{
-                                                    bgcolor: 'var(--primary-color)',
-                                                    '&:hover': { bgcolor: 'var(--accent-color)' },
-                                                    flex: 1,
-                                                }}
-                                            >
-                                                Xem Hình Ảnh
-                                            </Button>
+                                        <Typography variant="body2" sx={{ color: '#666', mb: 1 }}>
+                                            {reform.description}
+                                        </Typography>
+                                    </Grid>
+                                    <Grid size={{ xs: 12, md: 4 }} sx={{ textAlign: { xs: 'left', md: 'right' } }}>
+                                        {reform.files && reform.files.length > 0 && (
+                                            <>
+                                                {reform.files.some((f) => f.fileType === 'image') ? (
+                                                    <Button
+                                                        variant="contained"
+                                                        startIcon={<ImageIcon />}
+                                                        onClick={() =>
+                                                            handleOpenImageGallery(
+                                                                reform.files
+                                                                    .filter((f) => f.fileType === 'image')
+                                                                    .map((f) => f.fileUrl)
+                                                            )
+                                                        }
+                                                        sx={{
+                                                            bgcolor: 'var(--primary-color)',
+                                                            '&:hover': { bgcolor: 'var(--accent-color)' },
+                                                        }}
+                                                    >
+                                                        Xem ảnh
+                                                    </Button>
+                                                ) : (
+                                                    <Button
+                                                        variant="contained"
+                                                        startIcon={<DownloadIcon />}
+                                                        onClick={() => handleDownload(reform, reform.files[0].fileType)}
+                                                        disabled={downloading === reform.id}
+                                                        sx={{
+                                                            bgcolor: 'var(--primary-color)',
+                                                            '&:hover': { bgcolor: 'var(--accent-color)' },
+                                                        }}
+                                                    >
+                                                        {downloading === reform.id
+                                                            ? 'Đang tải...'
+                                                            : `Tải xuống ${reform.files[0].fileType.toUpperCase()}`}
+                                                    </Button>
+                                                )}
+                                            </>
                                         )}
-                                        {item.files.some((f) => f.fileType !== 'image') && (
-                                            <Button
-                                                variant="contained"
-                                                startIcon={<DownloadIcon />}
-                                                disabled={downloading === item.id}
-                                                onClick={() => {
-                                                    const reform = reforms.find((r) => r.id === item.id);
-                                                    const nonImageFile = item.files.find((f) => f.fileType !== 'image');
-                                                    if (reform && nonImageFile) {
-                                                        handleDownload(reform, nonImageFile.fileType);
-                                                    }
-                                                }}
-                                                sx={{
-                                                    bgcolor: 'var(--primary-color)',
-                                                    '&:hover': { bgcolor: 'var(--accent-color)' },
-                                                    flex: 1,
-                                                }}
-                                            >
-                                                {downloading === item.id ? 'Đang tải...' : 'Tải xuống PDF'}
-                                            </Button>
-                                        )}
-                                    </Box>
-                                )}
+                                    </Grid>
+                                </Grid>
                             </Card>
-                        </Grid>
-                    ))}
-                </Grid>
+                        ))
+                    )}
+                </Box>
 
                 {/* Image Gallery Modal */}
                 <Dialog

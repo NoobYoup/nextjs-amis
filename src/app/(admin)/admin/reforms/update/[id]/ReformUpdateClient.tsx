@@ -19,6 +19,7 @@ import {
     Dialog,
     DialogContent,
     CardMedia,
+    MenuItem,
 } from '@mui/material';
 import {
     ArrowBack as ArrowBackIcon,
@@ -42,6 +43,7 @@ export default function ReformUpdateClient({ id }: ReformUpdateClientProps) {
     const router = useRouter();
     const [formData, setFormData] = useState({
         title: '',
+        category: '',
         description: '',
         details: [''],
         files: [] as File[],
@@ -55,6 +57,19 @@ export default function ReformUpdateClient({ id }: ReformUpdateClientProps) {
     const [existingFiles, setExistingFiles] = useState<{ id: string; fileUrl: string; fileType: string }[]>([]);
     const [openImageGallery, setOpenImageGallery] = useState(false);
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+    const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const data = await api.get<{ id: string; name: string }[]>('/admin/categories/reform');
+                setCategories(data);
+            } catch (err) {
+                console.error('Lỗi tải danh mục:', err);
+            }
+        };
+        fetchCategories();
+    }, []);
 
     useEffect(() => {
         const loadReform = async () => {
@@ -63,6 +78,7 @@ export default function ReformUpdateClient({ id }: ReformUpdateClientProps) {
 
                 setFormData({
                     title: data.title,
+                    category: data.category || '',
                     description: data.description,
                     details: data.details || [''],
                     files: [],
@@ -219,8 +235,8 @@ export default function ReformUpdateClient({ id }: ReformUpdateClientProps) {
         setError('');
         setSubmitLoading(true);
 
-        if (!formData.title.trim() || !formData.description.trim()) {
-            setError('Vui lòng điền đầy đủ tiêu đề và mô tả');
+        if (!formData.title.trim() || !formData.category.trim() || !formData.description.trim()) {
+            setError('Vui lòng điền đầy đủ tiêu đề, danh mục và mô tả');
             setSubmitLoading(false);
             return;
         }
@@ -228,6 +244,7 @@ export default function ReformUpdateClient({ id }: ReformUpdateClientProps) {
         try {
             const submitData = new FormData();
             submitData.append('title', formData.title.trim());
+            submitData.append('category', formData.category.trim());
             submitData.append('description', formData.description.trim());
             submitData.append('details', JSON.stringify(formData.details.filter(d => d.trim() !== '')));
             submitData.append('existingFiles', JSON.stringify(existingFiles));
@@ -281,15 +298,28 @@ export default function ReformUpdateClient({ id }: ReformUpdateClientProps) {
 
                 <Card sx={{ p: 4 }}>
                     <Grid container spacing={3}>
-                        <Grid size={{ xs: 12 }}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <TextField
                                 fullWidth
                                 label="Tiêu Đề *"
                                 value={formData.title}
                                 onChange={(e) => handleChange('title', e.target.value)}
-                                multiline
-                                rows={2}
                             />
+                        </Grid>
+                        <Grid size={{ xs: 12, md: 6 }}>
+                            <TextField
+                                select
+                                fullWidth
+                                label="Danh mục *"
+                                value={formData.category}
+                                onChange={(e) => handleChange('category', e.target.value)}
+                            >
+                                {categories.map((cat) => (
+                                    <MenuItem key={cat.id} value={cat.name}>
+                                        {cat.name}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
                         </Grid>
                         <Grid size={{ xs: 12 }}>
                             <TextField
